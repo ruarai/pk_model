@@ -217,9 +217,6 @@ bg_all <- background_data %>%
 
 data_samples <- bind_rows(occ_all, bg_all)
 
-# Inclusive max/min
-year_min <- 2001
-year_max <- 2012
 
 data_samples <- data_samples %>%
   mutate(Year_Constrained = pmin(pmax(Year, year_min), year_max)) #

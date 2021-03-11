@@ -3,45 +3,27 @@ library(doMC)
 
 # Regression trees
 library(gbm3)
+library(dismo)
 
+# Data manipulation
+library(stringr)
+
+outpath <- 'output/update/'
 
 
 data_all <- read.csv("data/clean/occurrence/data_all.csv")
 
-# let runBRT know that the host_species column is a discrete variable 
 
-# prepare dummy prediction rasters for host, vector and monkey host species
-mosquito_ras <- raster('data/clean/raster/mbs_mask.grd')
-monkey_ras <- mosquito_ras #+ 1
-human_ras <- mosquito_ras #+ 2
-blank_ras <- mosquito_ras - 1
-
-# add each layer to covs_current to make a covariate set for each species for model prediction
-mosquito <- addLayer(covs_current, mosquito_ras, blank_ras, blank_ras)
-names(mosquito)[names(mosquito)=='layer.1'] <- 'Host_mosquito'
-names(mosquito)[names(mosquito)=='layer.2'] <- 'Host_monkey'
-names(mosquito)[names(mosquito)=='layer.3'] <- 'Host_human'
-monkey <- addLayer(covs_current, blank_ras, monkey_ras, blank_ras)
-names(monkey)[names(monkey)=='layer.1'] <- 'Host_mosquito'
-names(monkey)[names(monkey)=='layer.2'] <- 'Host_monkey'
-names(monkey)[names(monkey)=='layer.3'] <- 'Host_human'
-human <- addLayer(covs_current, blank_ras, blank_ras, human_ras)
-names(human)[names(human)=='layer.1'] <- 'Host_mosquito'
-names(human)[names(human)=='layer.2'] <- 'Host_monkey'
-names(human)[names(human)=='layer.3'] <- 'Host_human'
 
 # ~~~~~~~~~~~~~~~~~
 # run bootstrapped BRT models
 
-ncpu <- 10
-nboot <- ncpu*1
 
 # 195 total presence records
-# ftable(dat_all[dat_all$PA == 1,]$Geometry_type)
 # 62 point records, 133 polygon records
 # get random bootstraps of the data (minimum 10 pres/10 abs)
 data_list <- replicate(nboot,
-                       subsamplePolys(dat_all,
+                       subsamplePolys(data_all,
                                       minimum = c(10, 10),
                                       replace = TRUE),
                        simplify = FALSE)
@@ -49,7 +31,7 @@ data_list <- replicate(nboot,
 data_list <- lapply(data_list,
                     balanceWeights2)
 
-save(data_list, file=paste0(outpath, "brt_data_list.RData"))
+save(data_list, file=str_c(outpath, "brt_data_list.RData"))
 # m = dismo::gbm.step(data_list[[i]],
 #                     gbm.x = 9:ncol(data_list[[1]]),
 #                     gbm.y = 1,
@@ -71,7 +53,7 @@ save(data_list, file=paste0(outpath, "brt_data_list.RData"))
 registerDoMC()
 getDoParWorkers()
 
-message('fit bernoulli BRT models in parallel')
+print('Fitting Bernoulli BRT models in parallel...')
 
 model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %dopar% {
   m <- gbm3::gbm(formula = PA ~ TCB_SD + human_pop + TCW_mean + TCW_SD +
@@ -86,12 +68,13 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
                  distribution = "bernoulli",
                  cv.fold = 10,
                  shrinkage = 0.005,
-                 n.trees = 20000,
-                 weights = data_list[[i]][,2],
+                 n.trees = 200,
+                 weights = data_list[[i]]$w,
                  interaction.depth = 4) # equiv. to tree complexity
-  message(paste0("fitting model ", i, " of ", length(data_list)))
+  print(paste0("Fitting model ", i, " of ", length(data_list)))
   m
 }
 
-message('saving model objects')
+print('Saving model objects')
+
 save(model_list, file = paste0(outpath, "brt_model_list.RData"))
