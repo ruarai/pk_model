@@ -16,7 +16,6 @@ year_max <- 2012
 source('code_ruarai/functions_parasite.R')
 
 
-
 source("code_ruarai/load_covariates.R")
 
 

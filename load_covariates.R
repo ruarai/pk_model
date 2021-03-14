@@ -27,6 +27,11 @@ names(covs_current) <- str_replace(names(covs_current), "_2012", "")
 human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 
 
+writeRaster(covs_current, 
+            file='data/clean/raster/covs_current',
+            overwrite=TRUE)
+
+
 print("Loading occurrence data...")
 
 # Read occurrence data with polygons incorporated 
