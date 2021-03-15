@@ -1,4 +1,13 @@
 
+set.seed(1)
+
+
+
+
+# Inclusive max/min
+year_min <- 2001
+year_max <- 2012
+
 # Map libraries
 library(raster)
 library(seegSDM)
@@ -112,7 +121,7 @@ occ_update <- occ_update %>%
                           TRUE ~ Host))
 
 write.csv(occ_update, "data/clean/occurrence/Pk_merged_occurrence.csv")
-  
+
 
 print("Sorting background data...")
 
@@ -128,7 +137,7 @@ poly_occ <- poly_occ %>%
 
 poly_occ <- poly_occ %>%
   filter(Presence == 1)
-  
+
 # Determine the number of each host
 host_counts <- data.frame(host_name = c("human", "mosquito","monkey"), counts = numeric(3), points = numeric(3))
 host_counts <- host_counts %>%

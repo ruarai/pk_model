@@ -40,4 +40,4 @@ OMP_NUM_THREADS="10"
 
 cd /data/gpfs/projects/punim1449/knowlesi_ruarai
 
-time Rscript covariate_dependence_analysis.R
+time Rscript code_ruarai/R/covariate_dependence_analysis.R

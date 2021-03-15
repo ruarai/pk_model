@@ -1,3 +1,6 @@
+library(dplyr)
+
+
 ### function for sampling data containing polygon, sampling from the unique_ID column
 
 subsamplePolys <- function (data, ...) {
@@ -6,12 +9,8 @@ subsamplePolys <- function (data, ...) {
   # point from each polygon and then take a bootstrap it using `subsample`.
   # Dots argument is passed to subsample.  
   
-  # subset to get polygon data only, in the parasite dataset this might include 
-  # presence/absence point data (if the 6km jitter around infection sites is used)
-  # but not background data
-  #poly_dat <- subset(data, data$true==1) - if jitter is used
-  
-  poly_dat <- subset(data, data$Geometry_type!='point')
+  # subset to get polygon data only
+  poly_dat <- data %>% filter(Geometry_type == 'polygon')
   
   # get the different IDs
   u <- unique(poly_dat$Unique_ID)
@@ -20,21 +19,22 @@ subsamplePolys <- function (data, ...) {
   u <- u[!is.na(u)]
   
   # loop through, picking an index for each based on the number available
-  data_idx <- sapply(u,
-                     function (identifier, data) {
-                       idx <- which(data$Unique_ID == identifier)
-                       sample(idx, 1)
-                     },
-                     data)
+  
+  resampled_poly_indexes <- sapply(u,
+                        function (identifier, data) {
+                          idx <- which(data$Unique_ID == identifier)
+                          sample(idx, 1)
+                        },
+                        data)
   
   # get the subsetted dataset
-  dat <- data[data_idx, ]
+  dat <- data[resampled_poly_indexes, ]
   
   # get the point data, in this case the background data points
-  dat_point <- subset(data, data$Geometry_type=='point')
+  dat_point <- data %>% filter(Geometry_type == 'point')
   
   # append the subsetted polygon data to the point data
-  dat_all <- rbind(dat, dat_point)
+  dat_all <- bind_rows(dat, dat_point)
   
   # randomly subsample the dataset
   ans <- subsample(dat_all,
