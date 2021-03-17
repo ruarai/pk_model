@@ -34,11 +34,11 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
   a <- Sys.time()
   
   m <- runBRT(data_list[[i]],
-              gbm.x = 9:ncol(data_list[[1]]),
-              gbm.y = 1,
+              gbm.x = 10:ncol(data_list[[1]]),
+              gbm.y = 8,
               n.folds = 10,
               gbm.coords = 4:5,
-              wt = 2)
+              wt = data_list[[i]]$wt)
   
   print(paste0("Took ", Sys.time() - a, " to fit model ", i ,"."))
   
