@@ -20,11 +20,11 @@ task_assignments <- readRDS(paste0("output/update/bootstrap_inputs/task_assignme
 
 data_list <- readRDS(paste0(outpath, "/bootstrap_inputs/", this_task_id ,"_brt_data_list.Rds"))
 
-
-registerDoMC(cores = detectCores())
+n_core <- 4
+registerDoMC(cores = n_core)
 
 print('Fitting Bernoulli BRT models in parallel...')
-print(paste0("With ", detectCores(), " cores."))
+print(paste0("With ", n_core, " cores."))
 
 model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %dopar% {
   print(paste0("Fitting model ", i, " of ", length(data_list)))
