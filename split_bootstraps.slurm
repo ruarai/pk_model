@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Partition for the job:
-#SBATCH --partition=snowy
+#SBATCH --partition=physical
 
 #SBATCH --ntasks=1
 #SBATCH --time=0-01:00:00
