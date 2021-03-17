@@ -21,6 +21,7 @@ date
 
 # Load required modules
 module load r/4.0.0
+module load gdal/3.0.2-python-3.7.4
 
 date
 
