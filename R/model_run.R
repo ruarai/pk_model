@@ -49,6 +49,8 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
 
 print('Saving model objects...')
 
-saveRDS(model_list, file = paste0(outpath,"bootstrap_outputs/", this_task_id, "_brt_model_list.Rds"))
+saveRDS(model_list, 
+        file = paste0(outpath,"bootstrap_outputs/", this_task_id, "_brt_model_list.Rds"),
+        compress = FALSE)
 
 print('Saved model objects.')
