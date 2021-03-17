@@ -10,8 +10,8 @@ data_all <- read.csv("data/clean/occurrence/data_all.csv")
 
 source('code_ruarai/R/functions_parasite.R')
 
-n_bootstraps_per_task <- 250
-n_tasks <- 4
+n_bootstraps_per_task <- 50
+n_tasks <- 20
 
 nboot <- n_bootstraps_per_task * n_tasks
 
