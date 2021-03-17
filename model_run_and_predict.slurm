@@ -5,7 +5,7 @@
 
 
 #SBATCH --ntasks=1
-#SBATCH --time=0-02:00:00
+#SBATCH --time=0-00:40:00
 #SBATCH --array=1-20
 #SBATCH --cpus-per-task=4
 
@@ -26,3 +26,5 @@ module load gdal/3.0.2-python-3.7.4
 date
 
 time Rscript code_ruarai/R/model_run.R ${SLURM_ARRAY_TASK_ID}
+
+time Rscript code_ruarai/R/produce_predictions.R ${SLURM_ARRAY_TASK_ID}
