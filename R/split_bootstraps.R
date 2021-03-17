@@ -10,10 +10,10 @@ data_all <- read.csv("data/clean/occurrence/data_all.csv")
 
 source('code_ruarai/R/functions_parasite.R')
 
-ncpu <- 16
-ntasks <- 625
+n_bootstraps_per_task <- 250
+n_tasks <- 40
 
-nboot <- ncpu * ntasks
+nboot <- n_bootstraps_per_task * n_tasks
 
 print("Subsampling polygons...")
 
@@ -33,9 +33,9 @@ data_list <- lapply(data_list,
 
 print("Saving...")
 
-task_assignments <- data.frame(cpu_id = rep(1:ncpu, nrep=ntasks),
-                               task_id = rep(1:ntasks, each=ncpu),
-                               bootstrap_index = 1:(ntasks*ncpu))
+task_assignments <- data.frame(cpu_id = rep(1:n_bootstraps_per_task, nrep=n_tasks),
+                               task_id = rep(1:n_tasks, each=n_bootstraps_per_task),
+                               bootstrap_index = 1:(n_tasks*n_bootstraps_per_task))
 
 saveRDS(task_assignments, file = paste0(outpath, "bootstrap_inputs/", "task_assignments.Rds"))
 

@@ -41,7 +41,7 @@ for (host in c('human','monkey', 'mosquito')){
                          function(m) {predict(prediction_covs, m, type="response", n.trees = length(m$trees))})
   
   # summarise all the ensembles
-  preds <- stack(preds_list)
+  preds <- stack(preds_list) # Possibly OK to use quick = TRUE
   
   # summarise the predictions 
   preds_sry <- combinePreds(preds, parallel = FALSE)
@@ -77,6 +77,5 @@ for (host in c('human','monkey', 'mosquito')){
   dev.off()
   
 }
-
 
 

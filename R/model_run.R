@@ -15,7 +15,7 @@ this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
 
 print(paste0("Starting task ", this_task_id))
 
-task_assignments <- readRDS(paste0(outpath, "bootstrap_inputs/", "task_assignments.Rds")) %>%
+task_assignments <- readRDS(paste0("output/update/bootstrap_inputs/task_assignments.Rds")) %>%
   filter(task_id == this_task_id)
 
 data_list <- readRDS(paste0(outpath, "/bootstrap_inputs/", this_task_id ,"_brt_data_list.Rds"))
