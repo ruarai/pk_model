@@ -6,7 +6,7 @@
 
 #SBATCH --ntasks=1
 #SBATCH --time=0-00:20:00
-#SBATCH --array=1-40
+#SBATCH --array=1-20
 #SBATCH --cpus-per-task=4
 
 #SBATCH --job-name="pk_pred"
@@ -15,7 +15,7 @@
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
 
-#SBATCH --mem=24576
+#SBATCH --mem=10000
 
 date
 

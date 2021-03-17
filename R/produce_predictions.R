@@ -59,7 +59,8 @@ model_preds_seasia <- getValues(stack(model_preds_seasia))
 print("Saving predictions.")
 
 saveRDS(model_preds_seasia,
-        file = paste0("output/update/predictions_seasia_human/", this_task_id, "_model_pred.Rds"))
+        file = paste0("output/update/predictions_seasia_human/", this_task_id, "_model_pred.Rds"),
+        compress=FALSE)
 
 
 
