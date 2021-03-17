@@ -38,16 +38,25 @@ human <- rename_layers_model_matrix(human)
 
 prediction_covs <- human
 
+print("Starting prediction loop...")
+
 model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('gbm3', 'dismo')) %dopar% {
   print(paste0("Predicting human-SEAsia for model ", i, " of ", length(model_list)))
   
+  a <- Sys.time()
+  
   m <- model_list[[i]]
   
-  predict(prediction_covs, m, type="response", n.trees = length(m$trees))
+  pred <- predict(prediction_covs, m, type="response", n.trees = length(m$trees))
+  
+  print(paste0("Predicted for model ", i, " in ", Sys.time() - a, " seconds."))
+  
+  return(pred)
 }
 
 model_preds_seasia <- getValues(stack(model_preds_seasia))
 
+print("Saving predictions.")
 
 saveRDS(model_preds_seasia,
         file = paste0("output/update/predictions_seasia_human/", this_task_id, "_model_pred.Rds"))
