@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Partition for the job:
-#SBATCH --partition=physical
+#SBATCH --partition=snowy
 
 
 #SBATCH --ntasks=1
@@ -15,12 +15,15 @@
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
 
-#SBATCH --mem=10240
+#SBATCH --mem=24576
 
 date
 
 # Load required modules
 module load r/4.0.0
 module load gdal/3.0.2-python-3.7.4
+
+
+date
 
 time Rscript code_ruarai/R/produce_predictions.R ${SLURM_ARRAY_TASK_ID}

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Partition for the job:
-#SBATCH --partition=physical
+#SBATCH --partition=snowy
 
 
 #SBATCH --ntasks=1
@@ -21,5 +21,7 @@ date
 
 # Load required modules
 module load r/4.0.0
+
+date
 
 time Rscript code_ruarai/R/model_run.R ${SLURM_ARRAY_TASK_ID}
