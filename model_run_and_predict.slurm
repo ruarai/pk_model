@@ -6,8 +6,8 @@
 
 #SBATCH --ntasks=1
 #SBATCH --time=0-00:40:00
-#SBATCH --array=1-20
-#SBATCH --cpus-per-task=4
+#SBATCH --array=1-10
+#SBATCH --cpus-per-task=8
 
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
