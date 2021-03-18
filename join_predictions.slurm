@@ -1,4 +1,5 @@
-# Partition for the job:
+#!/bin/bash
+
 #SBATCH --partition=snowy
 
 #SBATCH --nodes=1
