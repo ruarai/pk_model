@@ -7,8 +7,6 @@ library(dismo)
 
 library(dplyr)
 
-library(seegSDM)
-
 set.seed(1)
 
 this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
@@ -32,17 +30,21 @@ print(paste0("With ", n_core, " cores."))
 model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %dopar% {
   print(paste0("Fitting model ", i, " of ", length(data_list)))
   
-  a <- Sys.time()
-  
-  m <- runBRT(data_list[[i]],
-              gbm.x = 12:ncol(data_list[[1]]),
-              gbm.y = 8,
-              n.folds = 10,
-              gbm.coords = 4:5,
-              wt = data_list[[i]]$wt)
-  
-  print(paste0("Took ", Sys.time() - a, " to fit model ", i ,"."))
-  
+  m <- gbm3::gbm(formula = PA ~ TCB_SD + human_pop + TCW_mean + TCW_SD +
+                   SRTM_elevation + urban_access + Pf_temp +
+                   forest_intact + forest_disturbed +
+                   open_shrublands + woody_savannas +
+                   savannas + grasslands + permanent_wetlands +
+                   croplands + cropland_natural_vegetation_mosaic +
+                   fascicularis + nemestrina + leucosphyrus_group +
+                   Host_human + Host_mosquito + Host_monkey,
+                 data = data_list[[i]],
+                 distribution = "bernoulli",
+                 cv.fold = 10,
+                 shrinkage = 0.005,
+                 n.trees = 200,
+                 weights = data_list[[i]]$w,
+                 interaction.depth = 4) # equiv. to tree complexity
   m
 }
 
