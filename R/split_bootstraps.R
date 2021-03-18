@@ -5,13 +5,16 @@ print("Running split_bootstraps.R...")
 
 set.seed(1)
 
-outpath <- 'output/update/'
 data_all <- read.csv("data/clean/occurrence/data_all.csv")
 
 source('code_ruarai/R/functions_parasite.R')
 
-n_bootstraps_per_task <- 50
-n_tasks <- 20
+
+run_unique_name <- commandArgs(trailingOnly = TRUE)[1]
+
+
+n_bootstraps_per_task <- 10
+n_tasks <- 10
 
 nboot <- n_bootstraps_per_task * n_tasks
 
@@ -37,7 +40,14 @@ task_assignments <- data.frame(cpu_id = rep(1:n_bootstraps_per_task, nrep=n_task
                                task_id = rep(1:n_tasks, each=n_bootstraps_per_task),
                                bootstrap_index = 1:(n_tasks*n_bootstraps_per_task))
 
-saveRDS(task_assignments, file = paste0(outpath, "bootstrap_inputs/", "task_assignments.Rds"),
+
+
+out_dir <- paste0("output/update/bootstrap_inputs/", run_unique_name, "/")
+if(!dir.exists(out_dir)){
+  dir.create(out_dir, recursive = TRUE)
+}
+
+saveRDS(task_assignments, file = paste0(out_dir, "task_assignments.Rds"),
         compress = FALSE)
 
 for(unique_task_id in unique(task_assignments$task_id)){
@@ -46,7 +56,7 @@ for(unique_task_id in unique(task_assignments$task_id)){
   print(paste0("Writing data for task ", unique_task_id))
   
   saveRDS(data_list[assignments$bootstrap_index],
-          file = paste0(outpath, "bootstrap_inputs/", unique_task_id, "_brt_data_list.Rds"),
+          file = paste0(out_dir, unique_task_id, "_brt_data_list.Rds"),
           compress = FALSE)
 }
 

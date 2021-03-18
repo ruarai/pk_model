@@ -5,23 +5,25 @@ library(raster)
 
 library(Matrix)
 
-#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update/")
+run_unique_name <- commandArgs(trailingOnly = TRUE)[1]
 
 
+pred_files <- list.files(paste0("output/update/predictions/", run_unique_name, "/"), full.names=TRUE)
 
-mbs_land <- raster('data/clean/raster/mbs_mask.grd')
-blank_raster <- mbs_land - 1
+n_task <- length(pred_files)
 
-
-pred_files <- list.files("output/update/predictions_mbs_human/", full.names=TRUE)
-
+a <- Sys.time()
 preds <- lapply(pred_files, function(x){
   pred_values <- readRDS(x)
   
   pred_values[is.na(pred_values)] <- 0
   
-  return(as(t(pred_values), "sparseMatrix"))
+  return(Matrix::t(as(pred_values, "sparseMatrix")))
 })
+b <- Sys.time()
+print(b - a)
+
+n_bootstrap_per_task <- ncol(preds[[1]])
 
 all_i <- lapply(preds,
                 function(m){
@@ -38,9 +40,9 @@ all_x <- lapply(preds,
                   m@x
                 })
 
-all_i_adjusted <- lapply(0:621,
+all_i_adjusted <- lapply(0:(n_task-1),
                          function(i){
-                           all_i[[i + 1]] + i * 16
+                           all_i[[i + 1]] + i * n_bootstrap_per_task
                          })
 
 
@@ -48,8 +50,10 @@ full_pred_matrix <- sparseMatrix(
   i = unlist(all_i_adjusted),
   j = unlist(all_j),
   x = unlist(all_x),
-  dims = c(16*622, 76128)
+  dims = c(n_bootstrap_per_task*n_task, n_bootstrap_per_task)
 )
 
 
-saveRDS(full_pred_matrix, file = "output/update/full_mbs_human.Rds")
+saveRDS(full_pred_matrix, 
+        file = paste0("output/update/", run_unique_name , "_pred_matrix.Rds"),
+        compress=FALSE)

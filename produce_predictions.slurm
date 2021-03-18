@@ -15,9 +15,15 @@
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
 
-#SBATCH --mem=10000
+#SBATCH --mem=10G
 
 date
+
+if [ $# -eq 0 ]
+  then
+    echo "No model run name supplied."
+    exit 1
+fi
 
 # Load required modules
 module load r/4.0.0
@@ -26,4 +32,4 @@ module load gdal/3.0.2-python-3.7.4
 
 date
 
-time Rscript code_ruarai/R/produce_predictions.R ${SLURM_ARRAY_TASK_ID}
+time Rscript code_ruarai/R/produce_predictions.R ${SLURM_ARRAY_TASK_ID} $1

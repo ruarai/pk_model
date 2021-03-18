@@ -17,8 +17,14 @@
 
 date
 
+if [ $# -eq 0 ]
+  then
+    echo "No model run name supplied."
+    exit 1
+fi
+
 # Load required modules
 module load r/4.0.0
 module load gdal/3.0.2-python-3.7.4
 
-time Rscript code_ruarai/R/split_bootstraps.R
+time Rscript code_ruarai/R/split_bootstraps.R $1

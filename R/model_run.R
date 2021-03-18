@@ -11,9 +11,8 @@ library(seegSDM)
 
 set.seed(1)
 
-outpath <- 'output/update/'
-
 this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
+run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
 
 print(paste0("Starting task ", this_task_id))
 
@@ -47,8 +46,14 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
 
 print('Saving model objects...')
 
+
+out_dir <- paste0("output/update/bootstrap_outputs/", run_unique_name, "/")
+if(!dir.exists(out_dir)){
+  dir.create(out_dir, recursive = TRUE)
+}
+
 saveRDS(model_list, 
-        file = paste0(outpath,"bootstrap_outputs/", this_task_id, "_brt_model_list.Rds"),
+        file = paste0(out_dir, this_task_id, "_brt_model_list.Rds"),
         compress = FALSE)
 
 print('Saved model objects.')

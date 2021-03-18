@@ -10,14 +10,15 @@ library(dismo)
 library(dplyr)
 
 this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
+run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
 
 print(paste0("Starting task ", this_task_id))
 
 registerDoMC(cores = 4)
 
-bootstrap_out_path <- "output/update/bootstrap_outputs/"
-
-model_list <- readRDS(file = paste0("output/update/bootstrap_outputs/", this_task_id, "_brt_model_list.Rds"))
+model_list <- readRDS(file = paste0("output/update/bootstrap_outputs/",
+                                    run_unique_name, "/",
+                                    this_task_id, "_brt_model_list.Rds"))
 
 rename_layers_model_matrix <- function(raster){
   names(raster)[names(raster)=='layer.1'] <- 'Host_mosquito'
@@ -58,8 +59,13 @@ model_preds_seasia <- getValues(stack(model_preds_seasia))
 
 print("Saving predictions.")
 
+out_dir <- paste0("output/update/predictions/", run_unique_name, "/")
+if(!dir.exists(out_dir)){
+  dir.create(out_dir, recursive = TRUE)
+}
+
 saveRDS(model_preds_seasia,
-        file = paste0("output/update/predictions_seasia_human/", this_task_id, "_model_pred.Rds"),
+        file = paste0(out_dir, this_task_id, "_model_pred.Rds"),
         compress=FALSE)
 
 
