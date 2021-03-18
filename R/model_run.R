@@ -42,7 +42,7 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
                  distribution = "bernoulli",
                  cv.fold = 10,
                  shrinkage = 0.005,
-                 n.trees = 200,
+                 n.trees = 4000,
                  weights = data_list[[i]]$w,
                  interaction.depth = 4) # equiv. to tree complexity
   m
