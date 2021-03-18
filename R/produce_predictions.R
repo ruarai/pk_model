@@ -16,9 +16,8 @@ print(paste0("Starting task ", this_task_id))
 
 registerDoMC(cores = 4)
 
-model_list <- readRDS(file = paste0("output/update/bootstrap_outputs/",
-                                    run_unique_name, "/",
-                                    this_task_id, "_brt_model_list.Rds"))
+in_dir <- paste0("output/update/bootstrap_outputs/", run_unique_name, "/")
+model_list <- readRDS(file = paste0(in_dir, this_task_id, "_brt_model_list.Rds"))
 
 rename_layers_model_matrix <- function(raster){
   names(raster)[names(raster)=='layer.1'] <- 'Host_mosquito'

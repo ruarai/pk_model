@@ -16,10 +16,12 @@ run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
 
 print(paste0("Starting task ", this_task_id))
 
-task_assignments <- readRDS(paste0("output/update/bootstrap_inputs/task_assignments.Rds")) %>%
+in_dir <- paste0("output/update/bootstrap_inputs/", run_unique_name, "/")
+
+task_assignments <- readRDS(paste0(in_dir,"task_assignments.Rds")) %>%
   filter(task_id == this_task_id)
 
-data_list <- readRDS(paste0(outpath, "/bootstrap_inputs/", this_task_id ,"_brt_data_list.Rds"))
+data_list <- readRDS(paste0(in_dir, this_task_id ,"_brt_data_list.Rds"))
 
 n_core <- 4
 registerDoMC(cores = n_core)
