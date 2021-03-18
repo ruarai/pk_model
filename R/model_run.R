@@ -13,6 +13,7 @@ set.seed(1)
 
 this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
 run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
+n_core <- as.numeric(commandArgs(trailingOnly = TRUE)[3])
 
 print(paste0("Starting task ", this_task_id))
 
@@ -23,7 +24,6 @@ task_assignments <- readRDS(paste0(in_dir,"task_assignments.Rds")) %>%
 
 data_list <- readRDS(paste0(in_dir, this_task_id ,"_brt_data_list.Rds"))
 
-n_core <- 4
 registerDoMC(cores = n_core)
 
 print('Fitting Bernoulli BRT models in parallel...')
@@ -35,7 +35,7 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
   a <- Sys.time()
   
   m <- runBRT(data_list[[i]],
-              gbm.x = 10:ncol(data_list[[1]]),
+              gbm.x = 12:ncol(data_list[[1]]),
               gbm.y = 8,
               n.folds = 10,
               gbm.coords = 4:5,

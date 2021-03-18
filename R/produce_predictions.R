@@ -11,10 +11,11 @@ library(dplyr)
 
 this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
 run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
+n_core <- as.numeric(commandArgs(trailingOnly = TRUE)[3])
 
 print(paste0("Starting task ", this_task_id))
 
-registerDoMC(cores = 4)
+registerDoMC(cores = n_core)
 
 in_dir <- paste0("output/update/bootstrap_outputs/", run_unique_name, "/")
 model_list <- readRDS(file = paste0(in_dir, this_task_id, "_brt_model_list.Rds"))
@@ -39,17 +40,21 @@ human <- rename_layers_model_matrix(human)
 prediction_covs <- human
 
 print("Starting prediction loop...")
+print(paste0("With ", n_core, " cores."))
 
-model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('gbm3', 'dismo')) %dopar% {
+
+model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('dismo',
+                                                                    'snowfall',
+                                                                    'seegSDM')) %dopar% {
   print(paste0("Predicting human-SEAsia for model ", i, " of ", length(model_list)))
   
   a <- Sys.time()
   
   m <- model_list[[i]]
   
-  pred <- predict(prediction_covs, m, type="response", n.trees = length(m$trees))
+  pred <- predict(prediction_covs, m$model, type="response", n.trees = length(m$model$trees))
   
-  print(paste0("Predicted for model ", i, " in ", Sys.time() - a, " seconds."))
+  print(paste0("Predicted for model ", i, " in ", Sys.time() - a, "."))
   
   return(pred)
 }
