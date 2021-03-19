@@ -13,7 +13,7 @@ this_task_id <- as.numeric(commandArgs(trailingOnly = TRUE)[1])
 run_unique_name <- commandArgs(trailingOnly = TRUE)[2]
 n_core <- as.numeric(commandArgs(trailingOnly = TRUE)[3])
 
-print(paste0("Starting task ", this_task_id))
+print(paste0("Starting prediction task ", this_task_id))
 
 registerDoMC(cores = n_core)
 
@@ -37,13 +37,13 @@ names(blank_seasia) <- "layer"
 human <- addLayer(seasia_covs, blank_seasia, blank_seasia, blank_seasia + 1)
 human <- rename_layers_model_matrix(human)
 
-prediction_covs <- human
+prediction_covs <- subset(human, model_list[[1]]$variables$var_names)
 
 print("Starting prediction loop...")
 print(paste0("With ", n_core, " cores."))
 
 
-model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('dismo',
+model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('dismo', # idk what packages should be here!
                                                                     'snowfall',
                                                                     'seegSDM')) %dopar% {
   print(paste0("Predicting human-SEAsia for model ", i, " of ", length(model_list)))
@@ -52,7 +52,7 @@ model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('dismo',
   
   m <- model_list[[i]]
   
-  pred <- predict(prediction_covs, m$model, type="response", n.trees = length(m$model$trees))
+  pred <- predict(prediction_covs, m, type="response", n.trees = length(m$trees))
   
   print(paste0("Predicted for model ", i, " in ", Sys.time() - a, "."))
   

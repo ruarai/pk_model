@@ -30,6 +30,8 @@ print(paste0("With ", n_core, " cores."))
 model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %dopar% {
   print(paste0("Fitting model ", i, " of ", length(data_list)))
   
+  a <- Sys.time()
+  
   m <- gbm3::gbm(formula = PA ~ TCB_SD + human_pop + TCW_mean + TCW_SD +
                    SRTM_elevation + urban_access + Pf_temp +
                    forest_intact + forest_disturbed +
@@ -45,6 +47,8 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
                  n.trees = 4000,
                  weights = data_list[[i]]$w,
                  interaction.depth = 4) # equiv. to tree complexity
+  
+  print(paste0("Fitted model ", i, " in ", Sys.time() - a, "."))
   m
 }
 

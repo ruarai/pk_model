@@ -11,10 +11,14 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
 
+#SBATCH --output=slurm_out/%x.%A_%a.out
+#SBATCH --error=slurm_out/%x.%A_%a.error
+
 #SBATCH --mem=24G
 
 #SBATCH --time=0-1:00:00
 
+#SBATCH --mem=24G
 
 date
 
