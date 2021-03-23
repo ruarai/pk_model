@@ -1,9 +1,4 @@
-
-#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
-set.seed(1)
-
-
+source('code_ruarai/R/functions_parasite.R')
 
 
 # Inclusive max/min
@@ -20,10 +15,20 @@ library(dplyr)
 library(tidyr)
 
 
-print("Loading raster covariate data...")
+occ_files <- c("MBS_LH_A_2005-2014.csv",
+               "MBS_LH_B_2005-2014.csv",
+               "MBS_MT_point_2007-2018.csv",
+               "MBS_MT_polygon_2007-2018.csv")
 
-# Loading primary MBS covariate data
-covs_current <- brick('data/clean/raster/mbs_raster_current.grd')
+occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
+
+
+occ_data <- bind_rows(lapply(occ_files, read.csv))
+
+covs_current <- brick('data/clean/raster/covs_current')
+human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
+
+
 covs_temporal <- brick('data/clean/raster/mbs_raster_temporal.grd')
 covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal.grd')
 
@@ -31,120 +36,12 @@ covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal.grd')
 covs_current <- dropLayer(covs_current, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 covs_nontemporal <- dropLayer(covs_nontemporal, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 
-# Removing temporal component from our layers
-names(covs_current) <- str_replace(names(covs_current), "_2012", "")
-
-# Make a reference to the human population layer for later use
-human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
-
-
-writeRaster(covs_current, 
-            file='data/clean/raster/covs_current',
-            overwrite=TRUE)
-
-
-print("Loading occurrence data...")
-
-# Read occurrence data with polygons incorporated 
-occ_mbs <- read.csv('data/clean/occurrence/polygon_data_mbs.csv', stringsAsFactors = FALSE)
-
-# Correct column entries for mosquito host
-occ_mbs[occ_mbs$Host=='mosquitoes with sporozoites', ]$Host <- 'mosquito'
-
-# move 5 points in Singapore onto land
-# find index of points outside the mask
-outside_mask <- which(is.na(raster::extract(human_pop, occ_mbs[,c('Longitude', 'Latitude')])))
-outside_points <- occ_mbs[outside_mask,]
-outside_points <- outside_points[, c('Longitude', 'Latitude')]
-land_points <- nearestLand(outside_points, human_pop, 10000)
-
-# replace all outside_mask points with lats/longs for land points
-for (i in 1:length(outside_mask)) {
-  occ_mbs[outside_mask[[i]], c('Longitude', 'Latitude')] <- land_points[i,]
-}
-
-# change ID column name to Unique_ID
-occ_mbs <- occ_mbs %>% rename(Unique_ID = ID)
-
-# get extent of covs_current
-ext <- extent(covs_current)
-
-# find index of all points falling outside the extent
-outside_ext_idx <- which((occ_mbs$Latitude < ext[3]) 
-                         |(occ_mbs$Latitude > ext[4]) 
-                         |(occ_mbs$Longitude < ext[1]) 
-                         |(occ_mbs$Longitude > ext[2]))
-
-stopifnot(length(outside_ext_idx)==0)
-
-# subset the presence and absence points 
-absence <- occ_mbs %>% filter(Presence == 0)
-occ <- occ_mbs %>% filter(Presence == 1)
-
-write.csv(occ_mbs, "data/clean/occurrence/MBS_occ_abs.csv")
-
-
-print("Loading PK_Merged...")
-
-
-
-pk_merged = read.csv('data/raw/occurrence/Pk_Merged_MT.csv')
-
-# Drop rows with missing Long/Lat
-pk_merged <- pk_merged %>%
-  drop_na(Longitude, Latitude)
-
-pk_outside_MBS <- is.na(raster::extract(human_pop, 
-                                        pk_merged[,c('Longitude', 'Latitude')]))
-
-pk_merged <- pk_merged[!pk_outside_MBS,]
-
-occ_update <- pk_merged %>% filter(Presence == 1)
-
-# Remove duplicate studies
-occ_update <- occ_update %>% distinct(Latitude, Longitude, Start_year, .keep_all=T)
-
-# Long! Removing rows without an exclusion reason
-occ_update <- occ_update %>%
-  filter(is.na(Exclusion.reason..1.No.data.2.Data.from.other.studies.or.in.original.3.Data.downloaded.from.health.dept.etc.4.too.aggregated.not.specific.enough.5.diagnostics.6.absence))
-
-# Creating a Year field
-# The floor of the mean of start and end year
-# Set to 2012 if null (-999)
-occ_update <- occ_update %>%
-  rowwise() %>%
-  mutate(Year = floor(mean(Start_year,End_year))) %>%
-  mutate(Year = case_when(Year == -999 ~ 2012,
-                          TRUE ~ Year))
-
-# Rename macaque to monkey
-occ_update <- occ_update %>%
-  mutate(Host = case_when(Host == "macaque" ~ "monkey",
-                          TRUE ~ Host))
-
-write.csv(occ_update, "data/clean/occurrence/Pk_merged_occurrence.csv")
-
-
-print("Sorting background data...")
-
-
-# load occurrence data without coords for polygons 
-
-poly_occ <- read.csv('data/clean/occurrence/parasite_data_mbs_bigpolys_excluded.csv', stringsAsFactors = FALSE)
-
-# Mosquitoes w/ sporozoites -> just mosquitoes
-poly_occ <- poly_occ %>%
-  mutate(Host = case_when(Host == "mosquitoes with sporozoites" ~ "mosquito",
-                          TRUE ~ Host))
-
-poly_occ <- poly_occ %>%
-  filter(Presence == 1)
 
 # Determine the number of each host
 host_counts <- data.frame(host_name = c("human", "mosquito","monkey"), counts = numeric(3), points = numeric(3))
 host_counts <- host_counts %>%
   rowwise() %>%
-  mutate(counts = poly_occ %>%
+  mutate(counts = occ_data %>%
            filter(Host == host_name) %>%
            nrow())
 
@@ -215,12 +112,10 @@ points_to_df <- function(points, host){
 background_data <- bind_rows(points_to_df(human_bg, "human"),
                              points_to_df(vector_bg, "mosquito"),
                              monkey_bg)
-
 background_data$Unique_ID <- NA
 
 
-occ_all <- bind_rows(occ, occ_update) %>%
-  select(Unique_ID, Longitude, Latitude, Year, Geometry_type, Host) %>%
+occ_all <- occ_data %>%
   mutate(PA = 1,
          wt = 1)
 
@@ -235,9 +130,7 @@ data_samples <- bind_rows(occ_all, bg_all)
 
 
 data_samples <- data_samples %>%
-  mutate(Year_Constrained = pmin(pmax(Year, year_min), year_max)) #
-
-write.csv(data_samples, "data/clean/occurrence/data_samples.csv")
+  mutate(Year_Constrained = pmin(pmax(Year, year_min), year_max))
 
 
 
