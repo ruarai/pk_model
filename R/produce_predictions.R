@@ -52,7 +52,7 @@ model_preds_seasia <- foreach(i=1:length(model_list), .packages = c('dismo',
   
   m <- model_list[[i]]
   
-  pred <- predict(prediction_covs, m$model, type="response", n.trees = length(m$model$trees))
+  pred <- predict(prediction_covs, m$model, type="response", n.trees = m$model$n.trees)
   
   print(paste0("Predicted for model ", i, " in ", Sys.time() - a, "."))
   
