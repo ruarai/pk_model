@@ -96,6 +96,19 @@ for(i in 1:nrow(admin_region_records)) {
 admin_region_records <- admin_region_records %>%
   select(-c(adm1_name_match, adm2_name_match))
 
+
+admin_region_records_naive <- admin_region_records %>%
+  rename(Unique_ID = ID) %>%
+  select(Year,
+         Longitude, Latitude,
+         Unique_ID,
+         Geometry_type,
+         Host)
+
+write.csv(admin_region_records_naive, "data/clean/occurrence/pk_present/MBS_MT_polygon_unexpanded_2007-2018.csv", row.names = FALSE)
+
+
+
 # Time to replicate records for each point within a polygon:
 
 
