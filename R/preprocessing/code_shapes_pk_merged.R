@@ -109,6 +109,9 @@ new_records <- list()
 for(i in 1:nrow(admin_region_records)) {
   record <- admin_region_records[i,]
   
+  # Give it an ID
+  record$ID <- i
+  
   if(record$Admin_level == 1) {
     shape <- malaysia_admin1[record$adm1_point_match,]
     
@@ -123,6 +126,7 @@ for(i in 1:nrow(admin_region_records)) {
   
   record_repeated$Longitude <- shape_points[,c("x")]
   record_repeated$Latitude <- shape_points[,c("y")]
+  
   
   new_records <- c(new_records, list(record_repeated))
 }

@@ -23,7 +23,34 @@ occ_files <- c("MBS_LH_A_2005-2014.csv",
 occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
 
 
-occ_data <- bind_rows(lapply(occ_files, read.csv))
+# Need to ensure unique IDs remain unique when binding the datasets together
+
+clean_unique_ids <- function(unique_ids){
+  distinct_unique_ids <- unique(unique_ids)
+  replacement_unique_ids <- 1:length(distinct_unique_ids)
+  
+  sapply(unique_ids, function(i){
+    replacement_unique_ids[match(i, distinct_unique_ids)]
+  })
+}
+
+occ_data <- lapply(occ_files, read.csv)
+
+occ_data <- lapply(occ_data, function(x) {
+  x$Unique_ID <- clean_unique_ids(x$Unique_ID)
+  x
+})
+
+max_uid <- max(sapply(occ_data,function(x) max(x$Unique_ID)))
+
+# Separate out each dataset by the maximum possible spacing
+for(i in 1:length(occ_data)) {
+  occ_data[[i]]$Unique_ID <- occ_data[[i]]$Unique_ID + (i - 1) * (max_uid + 1)
+}
+
+occ_data <- bind_rows(occ_data)
+
+
 
 covs_current <- brick('data/clean/raster/covs_current')
 human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
