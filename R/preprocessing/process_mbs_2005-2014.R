@@ -53,7 +53,7 @@ occ <- mbs_occ_abs %>%
   filter(Presence == 1) %>%
   select(Unique_ID, Longitude, Latitude, Year, Geometry_type, Host)
 
-write.csv(occ, "data/clean/occurrence/pk_present/MBS_LH_B_2005-2014.csv", row.names = FALSE)
+write.csv(occ, "data/clean/occurrence/pk_present/MBS_FS_B_2005-2014.csv", row.names = FALSE)
 
 
 
@@ -67,13 +67,9 @@ subset_occ <- subset_occ %>%
 subset_occ <- subset_occ %>%
   filter(Presence == 1) %>%
   rename(Unique_ID = ID) %>%
-  select(Unique_ID, Longitude, Latitude, Year, Geometry_type, Host) %>%
-  drop_na(Longitude, Latitude)
+  select(Unique_ID, Longitude, Latitude, Year, Geometry_type, Host) 
 
-outside_mask <- is.na(raster::extract(human_pop, subset_occ[,c('Longitude', 'Latitude')]))
-subset_occ <- subset_occ[!outside_mask,]
-
-write.csv(subset_occ, "data/clean/occurrence/pk_present/MBS_LH_A_2005-2014.csv", row.names = FALSE)
+write.csv(subset_occ, "data/clean/occurrence/MBS_FS_A_2005-2014.csv", row.names = FALSE)
 
 
 

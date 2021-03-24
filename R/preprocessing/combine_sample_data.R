@@ -1,5 +1,6 @@
 source('code_ruarai/R/functions_parasite.R')
 
+#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
 # Inclusive max/min
 year_min <- 2001
@@ -15,8 +16,7 @@ library(dplyr)
 library(tidyr)
 
 
-occ_files <- c("MBS_LH_A_2005-2014.csv",
-               "MBS_LH_B_2005-2014.csv",
+occ_files <- c("MBS_FS_B_2005-2014.csv",
                "MBS_MT_point_2007-2018.csv",
                "MBS_MT_polygon_unexpanded_2007-2018.csv")
 
@@ -52,6 +52,7 @@ occ_data <- bind_rows(occ_data)
 
 
 
+
 covs_current <- brick('data/clean/raster/covs_current')
 human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 
@@ -64,11 +65,15 @@ covs_current <- dropLayer(covs_current, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 covs_nontemporal <- dropLayer(covs_nontemporal, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 
 
+# Psuedoabsence data generation:
+
+bg_occ <- read.csv("data/clean/occurrence/MBS_FS_A_2005-2014.csv")
+
 # Determine the number of each host
 host_counts <- data.frame(host_name = c("human", "mosquito","monkey"), counts = numeric(3), points = numeric(3))
 host_counts <- host_counts %>%
   rowwise() %>%
-  mutate(counts = occ_data %>%
+  mutate(counts = bg_occ %>%
            filter(Host == host_name) %>%
            nrow())
 
