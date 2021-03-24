@@ -90,13 +90,13 @@ out_dir_stats <- paste0("output/update/model_stats/", run_unique_name, "/")
 if(!dir.exists(out_dir_stats)){
   dir.create(out_dir_stats, recursive = TRUE)
 }
-write.csv(stats,paste0(out_dir_stats,'stats.csv'))
+write.csv(stats,paste0(out_dir_stats, this_task_id, '_stats.csv'))
 
 out_dir_rel_inf <- paste0("output/update/model_rel_inf/", run_unique_name, "/")
 if(!dir.exists(out_dir_rel_inf)){
   dir.create(out_dir_rel_inf, recursive = TRUE)
 }
-write.csv(relinf, file = paste0(out_dir_rel_inf, 'relative_influence.csv'))
+write.csv(relinf, file = paste0(out_dir_rel_inf, this_task_id,'_relative_influence.csv'))
 
 
 out_dir_predictions <- paste0("output/update/predictions/", run_unique_name, "/")

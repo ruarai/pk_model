@@ -5,9 +5,9 @@
 
 
 #SBATCH --ntasks=1
-#SBATCH --time=0-00:20:00
+#SBATCH --time=0-00:40:00
 #SBATCH --array=1-10
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 
 #SBATCH --job-name="pk_pred"
 #SBATCH --account="punim1449"
