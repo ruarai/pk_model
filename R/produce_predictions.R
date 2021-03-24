@@ -84,6 +84,9 @@ relinf <- bind_rows(relinf_list)
 print("Saving predictions.")
 
 
+saveRDS(model_preds_seasia,
+        file = paste0(out_dir_predictions, this_task_id, "_model_pred.Rds"),
+        compress=FALSE)
 
 
 out_dir_stats <- paste0("output/update/model_stats/", run_unique_name, "/")
@@ -103,7 +106,3 @@ out_dir_predictions <- paste0("output/update/predictions/", run_unique_name, "/"
 if(!dir.exists(out_dir_predictions)){
   dir.create(out_dir_predictions, recursive = TRUE)
 }
-
-saveRDS(model_preds_seasia,
-        file = paste0(out_dir_predictions, this_task_id, "_model_pred.Rds"),
-        compress=FALSE)

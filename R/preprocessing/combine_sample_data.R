@@ -1,6 +1,7 @@
-source('code_ruarai/R/functions_parasite.R')
 
-#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
+setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
+
+source('code_ruarai/R/functions_parasite.R')
 
 # Inclusive max/min
 year_min <- 2001
@@ -16,9 +17,9 @@ library(dplyr)
 library(tidyr)
 
 
-occ_files <- c("MBS_FS_B_2005-2014.csv",
-               "MBS_MT_point_2007-2018.csv",
-               "MBS_MT_polygon_unexpanded_2007-2018.csv")
+occ_files <- c("MBS_FS_B_2005-2014.csv")#,
+               #"MBS_MT_point_2007-2018.csv",
+               #"MBS_MT_polygon_unexpanded_2007-2018.csv")
 
 occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
 
@@ -35,18 +36,18 @@ clean_unique_ids <- function(unique_ids){
 }
 
 occ_data <- lapply(occ_files, read.csv)
-
-occ_data <- lapply(occ_data, function(x) {
-  x$Unique_ID <- clean_unique_ids(x$Unique_ID)
-  x
-})
-
-max_uid <- max(sapply(occ_data,function(x) max(x$Unique_ID)))
-
-# Separate out each dataset by the maximum possible spacing
-for(i in 1:length(occ_data)) {
-  occ_data[[i]]$Unique_ID <- occ_data[[i]]$Unique_ID + (i - 1) * (max_uid + 1)
-}
+# 
+# occ_data <- lapply(occ_data, function(x) {
+#   x$Unique_ID <- clean_unique_ids(x$Unique_ID)
+#   x
+# })
+# 
+# max_uid <- max(sapply(occ_data,function(x) max(x$Unique_ID)))
+# 
+# # Separate out each dataset by the maximum possible spacing
+# for(i in 1:length(occ_data)) {
+#   occ_data[[i]]$Unique_ID <- occ_data[[i]]$Unique_ID + (i - 1) * (max_uid + 1)
+# }
 
 occ_data <- bind_rows(occ_data)
 
@@ -82,7 +83,7 @@ total_presence_n <- sum(host_counts$counts)
 
 host_counts <- host_counts %>%
   rowwise() %>%
-  mutate(points = counts / total_presence_n * background_point_n)
+  mutate(points = round(counts / total_presence_n * background_point_n))
 
 
 fascicularis <- read.csv('data/clean/occurrence/fascicularis_presence.csv')
@@ -154,7 +155,7 @@ occ_all <- occ_data %>%
 bg_all <- background_data %>%
   select(Unique_ID, Longitude, Latitude, Year, Geometry_type, Host) %>%
   mutate(PA = 0,
-         wt = 0.5)
+         wt = 1)
 
 
 
