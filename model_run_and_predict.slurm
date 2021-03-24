@@ -5,9 +5,9 @@
 
 
 #SBATCH --ntasks=1
-#SBATCH --time=0-00:40:00
+#SBATCH --time=0-01:00:00
 #SBATCH --array=1-10
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=10
 
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
@@ -15,7 +15,7 @@
 #SBATCH --job-name="pk_brt"
 #SBATCH --account="punim1449"
 
-#SBATCH --mem=48G
+#SBATCH --mem=32G
 
 date
 
