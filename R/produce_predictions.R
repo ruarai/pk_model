@@ -93,8 +93,8 @@ if(!dir.exists(out_dir_stats)){
 write.csv(stats,paste0(out_dir_stats,'stats.csv'))
 
 out_dir_rel_inf <- paste0("output/update/model_rel_inf/", run_unique_name, "/")
-if(!dir.exists(out_dir_stats)){
-  dir.create(out_dir_stats, recursive = TRUE)
+if(!dir.exists(out_dir_rel_inf)){
+  dir.create(out_dir_rel_inf, recursive = TRUE)
 }
 write.csv(relinf, file = paste0(out_dir_rel_inf, 'relative_influence.csv'))
 
