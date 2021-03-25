@@ -34,13 +34,21 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
   
   a <- Sys.time()
   
-  # These column numbers are fragile - should be changed
-  m <- runBRT(data_list[[i]],
-              gbm.x = 9:ncol(data_list[[1]]),
-              gbm.y = 6,
+  bs_data <- data_list[[i]]
+  
+  y_index <- match("PA", names(bs_data))
+  
+  long_index <- match("Longitude", names(bs_data))
+  lat_index <- match("Longitude", names(bs_data))
+  
+  wt_index <- match("wt", names(bs_data))
+  
+  m <- runBRT(bs_data,
+              gbm.x = 10:ncol(bs_data),
+              gbm.y = y_index,
               n.folds = 10,
-              gbm.coords = 2:3,
-              wt = 7)
+              gbm.coords = c(long_index, lat_index),
+              wt = wt_index)
   
   print(paste0("Took ", Sys.time() - a, " to fit model ", i ,"."))
   

@@ -211,8 +211,7 @@ data_samples <- data_samples %>%
   mutate(Host_species = recode(Host,
                                mosquito = 1,
                                monkey = 2,
-                               human = 3)) %>%
-  select(-Host)
+                               human = 3))
 
 
 data_all <- cbind(data_samples, data_covs)
