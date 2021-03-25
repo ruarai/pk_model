@@ -15,7 +15,7 @@
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
 
-#SBATCH --mem=32G
+#SBATCH --mem=48G
 
 date
 

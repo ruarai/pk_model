@@ -17,9 +17,9 @@ library(dplyr)
 library(tidyr)
 
 
-occ_files <- c("MBS_FS_B_2005-2014.csv")#,
-               #"MBS_MT_point_2007-2018.csv",
-               #"MBS_MT_polygon_unexpanded_2007-2018.csv")
+occ_files <- c("MBS_FS_B_2005-2014.csv",
+               "MBS_MT_point_2007-2018.csv",
+               "MBS_MT_polygon_2007-2018.csv")
 
 occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
 
@@ -36,18 +36,18 @@ clean_unique_ids <- function(unique_ids){
 }
 
 occ_data <- lapply(occ_files, read.csv)
-# 
-# occ_data <- lapply(occ_data, function(x) {
-#   x$Unique_ID <- clean_unique_ids(x$Unique_ID)
-#   x
-# })
-# 
-# max_uid <- max(sapply(occ_data,function(x) max(x$Unique_ID)))
-# 
-# # Separate out each dataset by the maximum possible spacing
-# for(i in 1:length(occ_data)) {
-#   occ_data[[i]]$Unique_ID <- occ_data[[i]]$Unique_ID + (i - 1) * (max_uid + 1)
-# }
+
+occ_data <- lapply(occ_data, function(x) {
+  x$Unique_ID <- clean_unique_ids(x$Unique_ID)
+  x
+})
+
+max_uid <- max(sapply(occ_data,function(x) max(x$Unique_ID)))
+
+# Separate out each dataset by the maximum possible spacing
+for(i in 1:length(occ_data)) {
+  occ_data[[i]]$Unique_ID <- occ_data[[i]]$Unique_ID + (i - 1) * (max_uid + 1)
+}
 
 occ_data <- bind_rows(occ_data)
 
