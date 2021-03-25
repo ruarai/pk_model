@@ -29,7 +29,7 @@ seasia_covs <- dropLayer(seasia_covs, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 # prepare dummy prediction raster for human host
 seasia_extent <- raster('data/clean/raster/SEAsia_extent.grd')
 seasia_human_ras <- seasia_extent + 3
-names(seasia_human_ras)[names(seasia_human_ras)=='layer'] <- 'Host_species'
+names(seasia_human_ras)[names(seasia_human_ras)=='TCB_mean'] <- 'Host_species'
 
 # add human dummy raster to pred_covs
 seasia_covs <- addLayer(seasia_covs, seasia_human_ras)
@@ -78,6 +78,11 @@ relinf <- bind_rows(relinf_list)
 
 print("Saving predictions.")
 
+out_dir_predictions <- paste0("output/update/predictions/", run_unique_name, "/")
+if(!dir.exists(out_dir_predictions)){
+  dir.create(out_dir_predictions, recursive = TRUE)
+}
+
 
 saveRDS(model_preds_seasia,
         file = paste0(out_dir_predictions, this_task_id, "_model_pred.Rds"),
@@ -96,8 +101,3 @@ if(!dir.exists(out_dir_rel_inf)){
 }
 write.csv(relinf, file = paste0(out_dir_rel_inf, this_task_id,'_relative_influence.csv'))
 
-
-out_dir_predictions <- paste0("output/update/predictions/", run_unique_name, "/")
-if(!dir.exists(out_dir_predictions)){
-  dir.create(out_dir_predictions, recursive = TRUE)
-}

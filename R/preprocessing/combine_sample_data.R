@@ -205,18 +205,16 @@ outside_idx <- attr(na.omit(data_covs), 'na.action')
 stopifnot(is.null(outside_idx))
 
 
+# Don't perform model matrix creation.
 
 data_samples <- data_samples %>% 
   mutate(Host_species = recode(Host,
                                mosquito = 1,
                                monkey = 2,
-                               human = 3))
+                               human = 3)) %>%
+  select(-Host)
 
 
-host_matrix <- model.matrix(~0 + as.factor(data_samples$Host_species))
+data_all <- cbind(data_samples, data_covs)
 
-colnames(host_matrix) <- c("Host_mosquito", "Host_monkey", "Host_human")
-
-data_all <- cbind(data_samples, data_covs, host_matrix)
-
-write.csv(data_all, "data/clean/occurrence/data_all.csv")
+write.csv(data_all, "data/clean/occurrence/data_all.csv", row.names = FALSE)

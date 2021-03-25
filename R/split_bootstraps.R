@@ -34,6 +34,9 @@ print("Balancing weights...")
 data_list <- lapply(data_list,
                     balanceWeights2)
 
+# Ensure this is a factored variable so runBRT handles it correctly (?)
+data_list$Host_species <- factor(data_list$Host_species)
+
 print("Saving...")
 
 task_assignments <- data.frame(cpu_id = rep(1:n_bootstraps_per_task, nrep=n_tasks),
