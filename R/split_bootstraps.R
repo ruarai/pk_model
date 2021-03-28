@@ -13,7 +13,7 @@ source('code_ruarai/R/functions_parasite.R')
 run_unique_name <- commandArgs(trailingOnly = TRUE)[1]
 
 
-n_bootstraps_per_task <- 10
+n_bootstraps_per_task <- 100
 n_tasks <- 10
 
 nboot <- n_bootstraps_per_task * n_tasks
