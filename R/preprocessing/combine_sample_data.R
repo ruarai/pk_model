@@ -17,9 +17,9 @@ library(dplyr)
 library(tidyr)
 
 
-occ_files <- c("MBS_FS_B_2005-2014.csv",
-               "MBS_MT_point_2007-2018.csv",
-               "MBS_MT_polygon_2007-2018.csv")
+occ_files <- c("MBS_FS_B_2005-2014.csv")#,
+               #"MBS_MT_point_2007-2018.csv",
+               #"MBS_MT_polygon_2007-2018.csv")
 
 occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
 
