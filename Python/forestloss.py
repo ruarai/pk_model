@@ -1,8 +1,5 @@
 import glob
 
-from osgeo.utils import gdal_calc
-from osgeo import gdal
-
 import tempfile
 from shutil import copyfile
 
@@ -31,6 +28,9 @@ target_tile_size = rds.RasterYSize / scale_factor
 rds = None
 
 
+
+
+
 warp_opts = gdal.WarpOptions(resampleAlg  = "average",
                             multithread = True,
                             width=target_tile_size, height = target_tile_size,
@@ -54,21 +54,25 @@ if os.path.exists(temp_calc):
 print("Calculating...")
 
 
+calc_opts = "--calc=A==0 -co NBITS=1 COMPRESS=DEFLATE --type==Byte --quiet"
+calc_cmd = "gdal_calc.py -A " + tf + calc_opts + " --outfile=" + temp_calc 
 
-# Create a calculated raster, where each pixel is 1/0 for what == our years of interest (banded by year)
-gdal_calc.Calc(calc = calc_strings,
-                outfile= temp_calc,
-                A = tf,
-                creation_options = ["NBITS=1", "COMPRESS=DEFLATE"],
-                type = "Byte",
-                quiet=True)
+print("Calc command: " calc_cmd)
+
+os.system(calc_cmd)
 
 print("Warping...")
 
-# Warp it onto our desired scale, using warp_opts
-gdal.Warp(out_downscaled,
-            temp_calc,
-            options = warp_opts)
+
+
+
+warp_opts = "-r average -multi -ot Float32 -co COMPRESS=DEFLATE -ts " + str(target_tile_size) + " " + str(target_tile_size)
+
+warp_cmd = "gdalwarp " + warp_opts + " " + temp_calc + " " + out_downscaled
+
+print("Warp command: " warp_cmd)
+
+os.system(warp_cmd)
 
 os.remove(temp_calc)
 
