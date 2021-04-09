@@ -24,4 +24,4 @@ module load gdal/3.0.2-python-3.7.4
 
 date
 
-time python code_ruarai/python/forestloss.py ${SLURM_ARRAY_TASK_ID}
+time python code_ruarai/Python/forestloss.py ${SLURM_ARRAY_TASK_ID}
