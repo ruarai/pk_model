@@ -19,6 +19,7 @@
 date
 
 # Load required modules
+module load gcc/8.3.0
 module load gdal/3.0.2-python-3.7.4
 
 date
