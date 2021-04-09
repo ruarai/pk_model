@@ -48,21 +48,37 @@ tf = tile_files[tf_index]
 
 print("Using tilefile: " + tf)
 
-temp_calc = os.path.join("data/forestloss/lossyear_calc", os.path.split(tf)[1])
 out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
 
-if os.path.exists(temp_calc):
-    os.remove(temp_calc)
 
 print("Calculating...")
 
-calc_strings = ["--calc=A==" + str(s) for s in range(0,20)]
 
-calc_cmd = "gdal_calc.py " + " ".join(calc_strings) + " --outfile=" + temp_calc + " -A " + tf + " --co=NBITS=1 --type=Byte --quiet"
 
-print("Calc command: " + calc_cmd)
+for i in range(0,20):
+    temp_calc = os.path.join("data/forestloss/lossyear_calc", os.path.split(tf)[1] + "_" + str(i) + ".tif")
 
-os.system(calc_cmd)
+    if os.path.exists(temp_calc):
+        os.remove(temp_calc)
+
+    calc_cmd = "gdal_calc.py " + "--calc=A==" + str(i) " --outfile=" + temp_calc + " -A " + tf + " --co=NBITS=1 --type=Byte --quiet"
+
+    print("Calc command: " + calc_cmd)
+
+    os.system(calc_cmd)
+
+
+calc_files = glob.glob("data/forestloss/lossyear_calc/" + os.path.split(tf)[1] + "*")
+
+
+temp_merged = os.path.join("data/forestloss/lossyear_merged", os.path.split(tf)[1])
+
+if os.path.exists(temp_merged):
+    os.remove(temp_merged)
+
+merge_cmd = "gdal_merge.py -separate -o " + temp_merged + " " + " ".join(calc_files)
+
+os.system(merge_cmd)
 
 print("Warping...")
 
@@ -71,12 +87,10 @@ print("Warping...")
 
 warp_opts = "-r average -multi -ot Float32 -ts " + str(target_tile_size) + " " + str(target_tile_size)
 
-warp_cmd = "gdalwarp " + warp_opts + " " + temp_calc + " " + out_downscaled
+warp_cmd = "gdalwarp " + warp_opts + " " + temp_merged + " " + out_downscaled
 
 print("Warp command: " + warp_cmd)
 
-os.system(warp_cmd)
-
-os.remove(temp_calc)
+os.system(temp_merged)
 
 print("Done.")
