@@ -1,5 +1,9 @@
 import glob
 
+from osgeo import gdal
+
+import os
+
 import tempfile
 from shutil import copyfile
 
@@ -39,7 +43,6 @@ warp_opts = gdal.WarpOptions(resampleAlg  = "average",
 
 
 
-calc_strings = ["A == " + str(s) for s in range(0,1)]
 
 tf = tile_files[tf_index]
 
@@ -53,12 +56,11 @@ if os.path.exists(temp_calc):
 
 print("Calculating...")
 
-"gdal_calc.py --calc=A==0 --outfile=data/forestloss/lossyear_calc/30N_130E.tif -A data/forestloss/lossyear_tiles/30N_130E.tif
+calc_strings = ["--calc=A==" + str(s) for s in range(0,20)]
 
+calc_cmd = "gdal_calc.py " + " ".join(calc_strings) + " --outfile=" + temp_calc + " -A " + tf + " --co=NBITS=1 --type=Byte --quiet"
 
-calc_cmd = "gdal_calc.py --calc=A==0 --outfile=" + temp_calc + " -A " + tf + " -co NBITS=1 --type=Byte --quiet"
-
-print("Calc command: " calc_cmd)
+print("Calc command: " + calc_cmd)
 
 os.system(calc_cmd)
 
@@ -71,7 +73,7 @@ warp_opts = "-r average -multi -ot Float32 -ts " + str(target_tile_size) + " " +
 
 warp_cmd = "gdalwarp " + warp_opts + " " + temp_calc + " " + out_downscaled
 
-print("Warp command: " warp_cmd)
+print("Warp command: " + warp_cmd)
 
 os.system(warp_cmd)
 
