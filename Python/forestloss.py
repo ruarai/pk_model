@@ -45,17 +45,18 @@ tf = tile_files[tf_index]
 
 print("Using tilefile: " + tf)
 
-temp_calc = os.path.join("lossyear_calc", os.path.split(tf)[1])
-out_downscaled = os.path.join("lossyear_downscale",os.path.split(tf)[1])
+temp_calc = os.path.join("data/forestloss/lossyear_calc", os.path.split(tf)[1])
+out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
 
 if os.path.exists(temp_calc):
     os.remove(temp_calc)
 
 print("Calculating...")
 
+"gdal_calc.py --calc=A==0 --outfile=data/forestloss/lossyear_calc/30N_130E.tif -A data/forestloss/lossyear_tiles/30N_130E.tif
 
-calc_opts = "--calc=A==0 -co NBITS=1 COMPRESS=DEFLATE --type==Byte --quiet"
-calc_cmd = "gdal_calc.py -A " + tf + calc_opts + " --outfile=" + temp_calc 
+
+calc_cmd = "gdal_calc.py --calc=A==0 --outfile=" + temp_calc + " -A " + tf + " -co NBITS=1 --type=Byte --quiet"
 
 print("Calc command: " calc_cmd)
 
@@ -66,7 +67,7 @@ print("Warping...")
 
 
 
-warp_opts = "-r average -multi -ot Float32 -co COMPRESS=DEFLATE -ts " + str(target_tile_size) + " " + str(target_tile_size)
+warp_opts = "-r average -multi -ot Float32 -ts " + str(target_tile_size) + " " + str(target_tile_size)
 
 warp_cmd = "gdalwarp " + warp_opts + " " + temp_calc + " " + out_downscaled
 
