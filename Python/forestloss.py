@@ -33,64 +33,77 @@ rds = None
 
 
 
-
-
-warp_opts = gdal.WarpOptions(resampleAlg  = "average",
-                            multithread = True,
-                            width=target_tile_size, height = target_tile_size,
-                            outputType = gdal.GDT_Float32,
-                            creationOptions = ["COMPRESS=DEFLATE"])
-
-
-
-
 tf = tile_files[tf_index]
 
 print("Using tilefile: " + tf)
 
-out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
+
+path_tmp_calc = "/var/local/tmp"
+
+calc_files = glob.glob(path_tmp_calc + "/" + os.path.split(tf)[1] + "*")
+for calc_file in calc_files:
+    os.remove(calc_file)
+
+
 
 
 print("Calculating...")
 
 
-
-for i in range(0,20):
-    temp_calc = os.path.join("data/forestloss/lossyear_calc", os.path.split(tf)[1] + "_" + str(i) + ".tif")
+for i in range(0, 20):
+    temp_calc = os.path.join(path_tmp_calc, os.path.split(tf)[1] + "_" + str(i).rjust(3,'0') + ".tif")
 
     if os.path.exists(temp_calc):
         os.remove(temp_calc)
 
-    calc_cmd = "gdal_calc.py " + "--calc=A==" + str(i) " --outfile=" + temp_calc + " -A " + tf + " --co=NBITS=1 --type=Byte --quiet"
+    calc_cmd = "gdal_calc.py " + "--calc=A==" + str(i) + " --outfile=" + temp_calc + " -A " + tf + " --co=NBITS=1 --type=Byte --quiet"
 
     print("Calc command: " + calc_cmd)
 
     os.system(calc_cmd)
 
 
-calc_files = glob.glob("data/forestloss/lossyear_calc/" + os.path.split(tf)[1] + "*")
+calc_files = sorted(glob.glob(path_tmp_calc + "/" + os.path.split(tf)[1] + "*"))
 
 
-temp_merged = os.path.join("data/forestloss/lossyear_merged", os.path.split(tf)[1])
+temp_merged = os.path.join(path_tmp_calc, "merged_" + os.path.split(tf)[1])
 
 if os.path.exists(temp_merged):
     os.remove(temp_merged)
 
-merge_cmd = "gdal_merge.py -separate -o " + temp_merged + " " + " ".join(calc_files)
+print("Merging...")
+
+tmp_vrt = "/var/local/tmp/" + str(tf_index) + ".vrt"
+
+merge_cmd = "gdalbuildvrt -separate " + tmp_vrt + " " + " ".join(calc_files)
+
+print("Merge command: " + merge_cmd)
 
 os.system(merge_cmd)
+
+trans_cmd = "gdal_translate " + tmp_vrt + " " + temp_merged
+
+print(trans_cmd)
+
+os.system(trans_cmd)
+
+for calc_file in calc_files:
+    os.remove(calc_file)
 
 print("Warping...")
 
 
 
+out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
 
-warp_opts = "-r average -multi -ot Float32 -ts " + str(target_tile_size) + " " + str(target_tile_size)
+warp_opts = "-r average -multi -ot Float32 -multi  -ts " + str(target_tile_size) + " " + str(target_tile_size)
 
-warp_cmd = "gdalwarp " + warp_opts + " " + temp_merged + " " + out_downscaled
+warp_cmd = "gdalwarp --config GDAL_CACHEMAX 500 " + warp_opts + " " + temp_merged + " " + out_downscaled
 
 print("Warp command: " + warp_cmd)
 
-os.system(temp_merged)
+os.system(warp_cmd)
+
+os.remove(temp_merged)
 
 print("Done.")
