@@ -68,7 +68,8 @@ covs_nontemporal <- dropLayer(covs_nontemporal, c('EVI_mean', 'EVI_SD', 'TCB_mea
 
 # Psuedoabsence data generation:
 
-bg_occ <- read.csv("data/clean/occurrence/MBS_FS_A_2005-2014.csv")
+bg_occ <- bind_rows(occ_data %>% filter(Geometry_type == 'point'),
+                    occ_data %>% filter(Geometry_type == 'polygon') %>% distinct(Unique_ID, .keep_all = T))
 
 # Determine the number of each host
 host_counts <- data.frame(host_name = c("human", "mosquito","monkey"), counts = numeric(3), points = numeric(3))
