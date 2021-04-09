@@ -12,7 +12,7 @@ import math
 
 tf_index = int(sys.argv[1])-1
 
-print("Starting run for index " + str(tf_index)
+print("Starting run for index " + str(tf_index))
 
 
 tile_files = glob.glob("data/forestloss/lossyear_tiles/*")
