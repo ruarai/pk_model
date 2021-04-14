@@ -54,12 +54,12 @@ occ_data <- bind_rows(occ_data)
 
 
 
-covs_current <- brick('data/clean/raster/covs_current')
+covs_current <- brick('data/clean/raster/covs_current_v2.grd')
 human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 
 
 covs_temporal <- brick('data/clean/raster/mbs_raster_temporal.grd')
-covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal.grd')
+covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal_v2.grd')
 
 # Dropping unused layers
 covs_current <- dropLayer(covs_current, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
