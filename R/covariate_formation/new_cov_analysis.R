@@ -1,29 +1,72 @@
 
 setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
-new_cov_files <- list.files("data/raw/covariate_production/new_covs",
+new_cov_files <- list.files("data/raw/covariate_production/new_covs/", pattern="*.tif",
                             full.names = TRUE)
 
-new_cov_names <- list.files("data/raw/covariate_production/new_covs")
+new_cov_names <- list.files("data/raw/covariate_production/new_covs/", pattern="*.tif")
 
 library(raster)
+
+blank <- raster("data/clean/raster/SEAsia_extent")
 
 
 new_covs <- lapply(new_cov_files, raster)
 
-new_covs_values <- lapply(new_covs, getValues)
+new_covs <- raster::stack(new_covs)
 
-new_covs_values <- do.call(cbind,new_covs_values)
+old_covs <- brick("data/clean/raster/SEAsia_covs")
+
+r_ext <- extent(blank)
+random_x <- runif(10000, r_ext[1],r_ext[2])
+random_y <- runif(10000, r_ext[3],r_ext[4])
+
+points <- SpatialPointsDataFrame(coords=data.frame(long=random_x,lat=random_y),data=data.frame(id=1:length(random_x)))
 
 
+data_old <- raster::extract(old_covs, points)
+data_new <- raster::extract(new_covs, points)
 
-non_missings <- which(!is.na(new_covs_values[,1]))
+data_old <- data_old[!is.na(data_old[,1]),]
+data_new <- data_new[!is.na(data_new[,1]),]
 
 
-arbitrary_points <- sample(non_missings, 1000)
+df <- cbind(data_new,data_old)
 
-df <- as.data.frame(log(new_covs_values[arbitrary_points,]))
+colnames(df) <- c(new_cov_names,colnames(old_covs_values))
 
-colnames(df) <- new_cov_names
+df <- as.data.frame(df)
 
 plot(df, pch='.', cex=0.9, col=rgb(0,0,0,0.8))
+
+saveRDS(df, "data/raw/covariate_production/cov_analysis_df.rds")
+
+data_long <- df %>%
+  mutate(pixel = row_number()) %>%
+  pivot_longer(cols = -matches("pixel"))
+
+
+saveRDS(data_long, "data/raw/covariate_production/cov_analysis_df_long.rds")
+
+
+d_old <- discretize(data.frame(getValues(old_covs)))
+d_new <- discretize(data.frame(getValues(new_covs)))
+
+e_old <- t(d_old)
+e_new <- t(d_new)
+
+entropy_old <- pbsapply(1:nrow(d_old), function(i) entropy(e_old[,i]))
+entropy_new <- pbsapply(1:nrow(d_new), function(i) entropy(e_new[,i]))
+
+plot(setValues(blank,entropy_old))
+
+
+plot(setValues(raster(new_covs),entropy_new))
+
+
+library(infotheo)
+
+
+condentropy()
+
+

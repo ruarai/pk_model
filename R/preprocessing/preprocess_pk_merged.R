@@ -84,6 +84,28 @@ pk_include <- pk_include %>%
   drop_na(Longitude, Latitude)
 
 
+# Remove duplicate studies
+pk_include <- pk_include %>% distinct(Latitude, Longitude, Start_year, .keep_all=T)
+
+
+# Creating a Year field
+# The floor of the mean of start and end year
+# Set to 2012 if null (-999)
+pk_include <- pk_include %>%
+  rowwise() %>%
+  mutate(Year = floor(mean(Start_year,End_year))) %>%
+  mutate(Year = case_when(Year == -999 ~ 2012,
+                          TRUE ~ Year))
+
+# Rename macaque to monkey
+pk_include <- pk_include %>%
+  mutate(Host = case_when(Host == "macaque" ~ "monkey",
+                          TRUE ~ Host))
+
+write.csv(pk_include ,"data/raw/occurrence/Pk_merged_uncoded_SEA.csv", row.names=FALSE)
+
+
+
 
 human_pop <- brick('data/clean/raster/mbs_raster_current.grd')[[3]]
 
@@ -105,24 +127,43 @@ points(pk_include[,c('Longitude', 'Latitude')],
        cex=0.5)
 title("Points and polygons included for analysis.")
 
-# Remove duplicate studies
-pk_include <- pk_include %>% distinct(Latitude, Longitude, Start_year, .keep_all=T)
 
-# Creating a Year field
-# The floor of the mean of start and end year
-# Set to 2012 if null (-999)
-pk_include <- pk_include %>%
-  rowwise() %>%
-  mutate(Year = floor(mean(Start_year,End_year))) %>%
-  mutate(Year = case_when(Year == -999 ~ 2012,
-                          TRUE ~ Year))
-
-# Rename macaque to monkey
-pk_include <- pk_include %>%
-  mutate(Host = case_when(Host == "macaque" ~ "monkey",
-                          TRUE ~ Host))
 
 write.csv(pk_include ,"data/raw/occurrence/Pk_merged_uncoded.csv", row.names=FALSE)
+
+
+
+
+# Exclusion analysis:
+
+
+
+exclusion_analysis <- pk_merged %>%
+  mutate(Exclusion_code = str_trim(Exclusion_code)) %>%
+  mutate(Exclusion_code = str_replace(Exclusion_code, "5", "4")) %>%
+  filter(Exclusion_code != '') %>%
+  group_by(Source_primary) %>%
+  summarise(exclusions = str_c(unique(Exclusion_code), collapse=' '))
+
+
+
+# Maps:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
