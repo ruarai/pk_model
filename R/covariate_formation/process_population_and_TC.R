@@ -32,9 +32,10 @@ process_oneoffs <- function(dirpath, varname){
     pull(full_raster) %>%
     pluck(1)
   
-  names(raster_stacked) <- raster_meta$bandname
   
   raster_stacked <- raster_stacked * blank
+  
+  names(raster_stacked) <- raster_meta$bandname
   
   writeRaster(raster_stacked, glue::glue("data/raw/covariate_production/temporal_final/{varname}_stack"), format="raster")  
 }

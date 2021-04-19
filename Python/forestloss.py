@@ -98,7 +98,7 @@ print("Warping...")
 
 out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
 
-warp_opts = "-r average -multi -ot Float32  -ts " + str(target_tile_size) + " " + str(target_tile_size)
+warp_opts = "-r average -ot Float32  -ts " + str(target_tile_size) + " " + str(target_tile_size)
 
 warp_cmd = "gdalwarp --config GDAL_CACHEMAX 500 " + warp_opts + " " + temp_merged + " " + out_downscaled
 

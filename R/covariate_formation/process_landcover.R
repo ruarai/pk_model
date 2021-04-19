@@ -1,7 +1,7 @@
 
+library(raster)
 library(tidyverse)
 
-library(raster)
 
 setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
@@ -34,13 +34,6 @@ landcover <- landcover %>%
   rowwise() %>%
   mutate(raster = list(raster(files)))
 
-stack_with_names <- function(rasters, var_names){
-  stacked <- stack(rasters)
-  
-  names(stacked) <- var_names
-  
-  return(stacked)
-}
 
 landcover_raster <- landcover %>%
   mutate(non_unique = "") %>%
