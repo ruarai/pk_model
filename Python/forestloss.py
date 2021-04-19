@@ -16,7 +16,7 @@ tf_index = int(sys.argv[1])-1
 print("Starting run for index " + str(tf_index))
 
 
-tile_files = glob.glob("data/forestloss/lossyear_tiles/*")
+tile_files = sorted(glob.glob("data/forestloss/lossyear_tiles/*"))
 
 
 
@@ -38,7 +38,7 @@ tf = tile_files[tf_index]
 print("Using tilefile: " + tf)
 
 
-path_tmp_calc = "/var/local/tmp"
+path_tmp_calc = "data/forestloss/temp"
 
 calc_files = glob.glob(path_tmp_calc + "/" + os.path.split(tf)[1] + "*")
 for calc_file in calc_files:
@@ -50,7 +50,7 @@ for calc_file in calc_files:
 print("Calculating...")
 
 
-for i in range(0, 20):
+for i in range(0, 21):
     temp_calc = os.path.join(path_tmp_calc, os.path.split(tf)[1] + "_" + str(i).rjust(3,'0') + ".tif")
 
     if os.path.exists(temp_calc):
@@ -73,7 +73,7 @@ if os.path.exists(temp_merged):
 
 print("Merging...")
 
-tmp_vrt = "/var/local/tmp/" + str(tf_index) + ".vrt"
+tmp_vrt = "data/forestloss/temp/" + str(tf_index) + ".vrt"
 
 merge_cmd = "gdalbuildvrt -separate " + tmp_vrt + " " + " ".join(calc_files)
 
@@ -90,13 +90,15 @@ os.system(trans_cmd)
 for calc_file in calc_files:
     os.remove(calc_file)
 
+os.remove(tmp_vrt)
+
 print("Warping...")
 
 
 
 out_downscaled = os.path.join("data/forestloss/lossyear_downscale",os.path.split(tf)[1])
 
-warp_opts = "-r average -multi -ot Float32 -multi  -ts " + str(target_tile_size) + " " + str(target_tile_size)
+warp_opts = "-r average -multi -ot Float32  -ts " + str(target_tile_size) + " " + str(target_tile_size)
 
 warp_cmd = "gdalwarp --config GDAL_CACHEMAX 500 " + warp_opts + " " + temp_merged + " " + out_downscaled
 

@@ -61,6 +61,11 @@ human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 covs_temporal <- brick('data/clean/raster/mbs_raster_temporal.grd')
 covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal_v2.grd')
 
+names_temporal <- unique(str_replace(names(covs_temporal),"_\\d{4}$",""))
+names_nontemporal <- setdiff(names(covs_nontemporal), names_temporal)
+
+covs_nontemporal <- dropLayer(covs_nontemporal, names_temporal)
+
 # Dropping unused layers
 covs_current <- dropLayer(covs_current, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
 covs_nontemporal <- dropLayer(covs_nontemporal, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
@@ -193,7 +198,7 @@ for (year in year_min:year_max) {
   covs_year_extract <- raster::extract(covs_year, long_lats_year)
   
   # check they're all there
-  stopifnot(all(colnames(data_covs) %in% colnames(covs_year_extract)))
+  #stopifnot(all(colnames(data_covs) %in% colnames(covs_year_extract)))
   
   # match up the column names so they're in the right order
   match <- match(colnames(data_covs), colnames(covs_year_extract))

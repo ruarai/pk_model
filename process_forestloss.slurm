@@ -14,7 +14,7 @@
 #SBATCH --job-name="pk_forestloss"
 #SBATCH --account="punim1449"
 
-#SBATCH --mem=8G
+#SBATCH --mem=256G
 
 date
 

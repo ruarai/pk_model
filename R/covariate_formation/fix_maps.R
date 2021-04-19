@@ -23,8 +23,7 @@ old_stack <- brick("data/clean/raster/SEAsia_covs")
 full_stack <- stack(new_stack, old_stack)
 
 writeRaster(full_stack, "data/clean/raster/SEAsia_covs_v2",
-            format = "GTiff",
-            options = c("COMPRESS=DEFLATE","ZLEVEL=9"))
+            format = "raster")
 
 
 mbs_mask <- raster("data/clean/raster/mbs_mask")

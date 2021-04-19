@@ -48,6 +48,7 @@ data_long <- df %>%
 
 saveRDS(data_long, "data/raw/covariate_production/cov_analysis_df_long.rds")
 
+library(infotheo)
 
 d_old <- discretize(data.frame(getValues(old_covs)))
 d_new <- discretize(data.frame(getValues(new_covs)))
@@ -61,10 +62,13 @@ entropy_new <- pbsapply(1:nrow(d_new), function(i) entropy(e_new[,i]))
 plot(setValues(blank,entropy_old))
 
 
+
+infotheo::mutinformation()
+
+
 plot(setValues(raster(new_covs),entropy_new))
 
 
-library(infotheo)
 
 
 condentropy()
