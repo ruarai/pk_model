@@ -5,7 +5,6 @@
 
 #SBATCH --ntasks=1
 #SBATCH --time=0-02:00:00
-#SBATCH --array=1-54
 #SBATCH --cpus-per-task=1
 
 #SBATCH --output=slurm_out/%x.%A_%a.out
@@ -26,4 +25,7 @@ date
 
 gdalinfo --version
 
-time python code_ruarai/Python/forestloss.py ${SLURM_ARRAY_TASK_ID}
+for i in {1..54}
+do
+    time python code_ruarai/Python/forestloss.py $i
+done
