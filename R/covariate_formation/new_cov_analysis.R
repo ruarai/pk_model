@@ -1,10 +1,10 @@
 
 setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
-new_cov_files <- list.files("data/raw/covariate_production/new_covs/", pattern="*.tif",
+new_cov_files <- list.files("data/raw/covariate_production/gee_covs/", pattern="*.tif",
                             full.names = TRUE)
 
-new_cov_names <- list.files("data/raw/covariate_production/new_covs/", pattern="*.tif")
+new_cov_names <- list.files("data/raw/covariate_production/gee_covs/", pattern="*.tif")
 
 library(raster)
 
@@ -33,7 +33,7 @@ data_new <- data_new[!is.na(data_new[,1]),]
 
 df <- cbind(data_new,data_old)
 
-colnames(df) <- c(new_cov_names,colnames(old_covs_values))
+colnames(df) <- c(new_cov_names,names(old_covs))
 
 df <- as.data.frame(df)
 
@@ -47,30 +47,4 @@ data_long <- df %>%
 
 
 saveRDS(data_long, "data/raw/covariate_production/cov_analysis_df_long.rds")
-
-library(infotheo)
-
-d_old <- discretize(data.frame(getValues(old_covs)))
-d_new <- discretize(data.frame(getValues(new_covs)))
-
-e_old <- t(d_old)
-e_new <- t(d_new)
-
-entropy_old <- pbsapply(1:nrow(d_old), function(i) entropy(e_old[,i]))
-entropy_new <- pbsapply(1:nrow(d_new), function(i) entropy(e_new[,i]))
-
-plot(setValues(blank,entropy_old))
-
-
-
-infotheo::mutinformation()
-
-
-plot(setValues(raster(new_covs),entropy_new))
-
-
-
-
-condentropy()
-
 

@@ -26,4 +26,7 @@ plot(new_stack)
 names(new_stack) <- new_cov_bandnames
 
 
-writeRaster(new_stack, "data/raw/covariate_production/nontemporal_final/google_earth_engine", format="raster")
+writeRaster(new_stack, 
+            "data/raw/covariate_production/nontemporal_final/google_earth_engine", 
+            format="raster",
+            overwrite=TRUE)

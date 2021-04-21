@@ -46,7 +46,10 @@ landcover_raster <- landcover_raster * blank
 
 names(landcover_raster) <- landcover$band_name
 
-writeRaster(landcover_raster, "data/raw/covariate_production/temporal_final/landcover_stack", format="raster")
+writeRaster(landcover_raster,
+            "data/raw/covariate_production/temporal_final/landcover_stack",
+            format="raster",
+            overwrite=TRUE)
 
 
 

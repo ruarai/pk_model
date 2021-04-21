@@ -11,6 +11,8 @@ import sys
 
 import math
 
+import subprocess, shlex
+
 tf_index = int(sys.argv[1])-1
 
 print("Starting run for index " + str(tf_index))
@@ -43,7 +45,7 @@ print("Using treecover2000 tilefile: " + treecover2000_tf)
 
 path_tmp_calc = "data/forestloss/temp_treecover2000"
 
-calc_files = glob.glob(path_tmp_calc + "/" + os.path.split(tf)[1] + "*")
+calc_files = glob.glob(path_tmp_calc + "/" + os.path.split(loss_tf)[1] + "*")
 for calc_file in calc_files:
     os.remove(calc_file)
 
@@ -52,42 +54,70 @@ for calc_file in calc_files:
 
 print("Calculating...")
 
+cores = int(sys.argv[2])
+print(f"With {cores} cores available.")
 
-for i in range(0, 21):
-    temp_calc = os.path.join(path_tmp_calc, os.path.split(tf)[1] + "_" + str(i).rjust(3,'0') + ".tif")
+i = 0
+while i < 21:
+    n_proc = 0
 
-    if os.path.exists(temp_calc):
-        os.remove(temp_calc)
+    calc_cmds = []
 
-    calc_opts = " --co=NBITS=1 --type=Byte --quiet"
-    calc_string = f"=((A>{i}) or (A==0)) and (B>=0.5)"
+    while n_proc < cores:
+        if i >= 21:
+            break
 
-    calc_cmd = f"gdal_calc.py --calc={calc_string} --outfile={temp_calc} -A {loss_tf} -B {treecover2000_tf} {calc_opts}"
+        temp_calc = os.path.join(path_tmp_calc, os.path.split(loss_tf)[1] + "_" + str(i).rjust(3,'0') + ".tif")
 
-    print("Calc command: " + calc_cmd)
+        if os.path.exists(temp_calc):
+            os.remove(temp_calc)
 
-    os.system(calc_cmd)
+        calc_opts = " --co=NBITS=1 --type=Byte --quiet"
+        calc_string = f"logical_and(logical_or(A > {i}, A == 0), B >= 0.5)"
+
+        calc_cmd = f'gdal_calc.py --calc="{calc_string}" --outfile={temp_calc} -A {loss_tf} -B {treecover2000_tf} {calc_opts}'
+
+        print(f"Command for iteration {i} ({n_proc}/{cores}): {calc_cmd}")
+
+        calc_cmds.append(calc_cmd)
+
+        n_proc = n_proc + 1
+        i = i + 1
 
 
-calc_files = sorted(glob.glob(path_tmp_calc + "/" + os.path.split(tf)[1] + "*"))
+    print(f"Executing {len(calc_cmds)} commands. ")
+
+    child_processes = []
+
+    for calc_cmd in calc_cmds:
+        args = shlex.split(calc_cmd)
+        p = subprocess.Popen(args)
+        child_processes.append(p) 
+
+    for cp in child_processes:
+        cp.wait() 
+    
+
+calc_files = sorted(glob.glob(path_tmp_calc + "/" + os.path.split(loss_tf)[1] + "*"))
 
 
-temp_merged = os.path.join(path_tmp_calc, "merged_" + os.path.split(tf)[1])
+temp_merged = os.path.join(path_tmp_calc, "merged_" + os.path.split(loss_tf)[1])
 
 if os.path.exists(temp_merged):
     os.remove(temp_merged)
 
 print("Merging...")
 
-tmp_vrt = f"data/forestloss/temp/{tf_index}.vrt"
+tmp_vrt = f"{path_tmp_calc}/{tf_index}.vrt"
 
-merge_cmd = f"gdalbuildvrt -separate {tmp_vrt} { " ".join(calc_files) }"
+merge_cmd = f"gdalbuildvrt -separate {tmp_vrt} "+ " ".join(calc_files)
 
 print("Merge command: " + merge_cmd)
 
 os.system(merge_cmd)
 
-trans_cmd = f"gdal_translate {tmp_vrt} {temp_merged}"
+trans_opt = "--config GDAL_CACHEMAX 512"
+trans_cmd = f"gdal_translate {trans_opt} {tmp_vrt} {temp_merged}"
 
 print(trans_cmd)
 
@@ -102,7 +132,7 @@ print("Warping...")
 
 
 
-out_downscaled = os.path.join("data/forestloss/treecover_downscale", os.path.split(tf)[1])
+out_downscaled = os.path.join("data/forestloss/treecover_downscale", os.path.split(loss_tf)[1])
 
 warp_opts = f"-multi -wo NUM_THREADS=ALL_CPUS -r average -ot Float32 -ts {target_tile_size} {target_tile_size}"
 

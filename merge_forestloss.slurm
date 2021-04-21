@@ -25,4 +25,10 @@ date
 
 gdalinfo --version
 
-time python code_ruarai/Python/forestloss_merge.py
+if [ $# -eq 0 ]
+  then
+    echo "No inputs supplied."
+    exit 1
+fi
+
+time python code_ruarai/Python/forestloss_merge.py $1 $2

@@ -16,7 +16,7 @@ tf_index = int(sys.argv[1])-1
 print("Starting run for index " + str(tf_index))
 
 
-tile_files = sorted(glob.glob("data/forestloss/lossyear_tiles/*"))
+tile_files = sorted(glob.glob("data/forestloss/temp_lossyear_input/*"))
 
 
 
@@ -25,7 +25,7 @@ target_pixel_size = 0.04166664
 
 scale_factor = target_pixel_size / curr_pixel_size
 
-rds = gdal.Open(tile_files[1])
+rds = gdal.Open(tile_files[0])
 curr_tile_size = rds.RasterYSize
 target_tile_size = rds.RasterYSize / scale_factor
 
