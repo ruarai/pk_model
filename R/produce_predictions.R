@@ -21,7 +21,7 @@ in_dir <- paste0("output/update/bootstrap_outputs/", run_unique_name, "/")
 model_list <- readRDS(file = paste0(in_dir, this_task_id, "_brt_model_list.Rds"))
 
 # get rasterbrick for SE Asia to predict to
-seasia_covs <- brick('data/clean/raster/SEAsia_covs.grd')
+seasia_covs <- brick('data/clean/raster_updated/prediction_SEA.grd')
 
 # drop correlated layers
 seasia_covs <- dropLayer(seasia_covs, c('EVI_mean', 'EVI_SD', 'TCB_mean'))

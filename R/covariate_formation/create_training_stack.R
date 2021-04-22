@@ -46,10 +46,12 @@ temporal_limited <- dropLayer(temporal_stack, layers_to_drop)
 
 
 writeRaster(temporal_limited,
-            "data/clean/raster_updated/temporal_SEA")
+            "data/clean/raster_updated/temporal_SEA",
+            overwrite=TRUE)
 
 writeRaster(nontemporal_stack,
-            "data/clean/raster_updated/nontemporal_SEA")
+            "data/clean/raster_updated/nontemporal_SEA",
+            overwrite=TRUE)
 
 
 
@@ -59,13 +61,17 @@ mbs_mask <- raster("data/clean/raster/mbs_mask")
 temporal_limited_mbs <- temporal_limited * mbs_mask
 nontemporal_stack_mbs <- nontemporal_stack * mbs_mask
 
+names(temporal_limited_mbs) <- names(temporal_limited)
+names(nontemporal_stack_mbs) <- names(nontemporal_stack)
 
 writeRaster(temporal_limited_mbs,
-            "data/clean/raster_updated/temporal_MBS")
+            "data/clean/raster_updated/temporal_MBS",
+            overwrite=TRUE)
 
 
 writeRaster(nontemporal_stack_mbs,
-            "data/clean/raster_updated/nontemporal_MBS")
+            "data/clean/raster_updated/nontemporal_MBS",
+            overwrite=TRUE)
 
 
 
@@ -83,7 +89,15 @@ prediction_raster <- stack(nontemporal_stack,
 
 
 writeRaster(prediction_raster,
-            "data/clean/raster_updated/prediction_SEA")
+            "data/clean/raster_updated/prediction_SEA",
+            overwrite=TRUE)
+
+prediction_raster_MBS <- prediction_raster * mbs_mask
+names(prediction_raster_MBS) <- names(prediction_raster)
+
+writeRaster(prediction_raster_MBS,
+            "data/clean/raster_updated/prediction_MBS",
+            overwrite=TRUE)
 
 
 

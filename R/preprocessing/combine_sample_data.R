@@ -17,9 +17,9 @@ library(dplyr)
 library(tidyr)
 
 
-occ_files <- c("MBS_FS_B_2005-2014.csv")#,
-               #"MBS_MT_point_2007-2018.csv",
-               #"MBS_MT_polygon_2007-2018.csv")
+occ_files <- c("MBS_FS_B_2005-2014.csv",
+               "MBS_MT_point_2007-2018.csv",
+               "MBS_MT_polygon_2007-2018.csv")
 
 occ_files <- str_c("data/clean/occurrence/pk_present/", occ_files)
 
@@ -54,22 +54,12 @@ occ_data <- bind_rows(occ_data)
 
 
 
-covs_current <- brick('data/clean/raster/covs_current_v2.grd')
+covs_current <- brick('data/clean/raster_updated/prediction_MBS.grd')
 human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 
 
-covs_temporal <- brick('data/clean/raster/mbs_raster_temporal.grd')
-covs_nontemporal <- brick('data/clean/raster/mbs_raster_nontemporal_v2.grd')
-
-names_temporal <- unique(str_replace(names(covs_temporal),"_\\d{4}$",""))
-names_nontemporal <- setdiff(names(covs_nontemporal), names_temporal)
-
-covs_nontemporal <- dropLayer(covs_nontemporal, names_temporal)
-
-# Dropping unused layers
-covs_current <- dropLayer(covs_current, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
-covs_nontemporal <- dropLayer(covs_nontemporal, c('EVI_mean', 'EVI_SD', 'TCB_mean'))
-
+covs_temporal <- brick('data/clean/raster_updated/temporal_MBS.grd')
+covs_nontemporal <- brick('data/clean/raster_updated/nontemporal_MBS.grd')
 
 # Psuedoabsence data generation:
 
@@ -210,6 +200,8 @@ for (year in year_min:year_max) {
 outside_idx <- attr(na.omit(data_covs), 'na.action')
 stopifnot(is.null(outside_idx))
 
+data_covs <- data_covs[-outside_idx,]
+data_samples <- data_samples[-outside_idx,]
 
 # Don't perform model matrix creation.
 
