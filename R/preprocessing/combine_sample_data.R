@@ -1,15 +1,16 @@
 
 setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
+# Map libraries
+library(raster)
+library(seegSDM)
+
 source('code_ruarai/R/functions_parasite.R')
 
 # Inclusive max/min
 year_min <- 2001
 year_max <- 2019
 
-# Map libraries
-library(raster)
-library(seegSDM)
 
 # Data manipulation
 library(stringr)
