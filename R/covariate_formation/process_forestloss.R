@@ -27,6 +27,16 @@ writeRaster(lossyear_raster,
 
 
 
-forestextent_raster <-  brick("data/raw/covariate_production/global_forest_change/full_forestextent.tif")
+treecover_raster <-  brick("data/raw/covariate_production/global_forest_change/treecover_downscale.tif")
 
-forestextent_raster <- forestextent_raster * blank
+treecover_raster <- treecover_raster * blank
+
+names(treecover_raster) <- c(str_c("treecover_", 2000+0:19), "treecover_blank")
+
+treecover_raster <- dropLayer(treecover_raster, c("treecover_blank"))
+
+writeRaster(treecover_raster,
+            "data/raw/covariate_production/temporal_final/treecover_stack",
+            method = "raster",
+            overwrite=TRUE)
+

@@ -9,7 +9,7 @@
 #SBATCH --array=1-1
 #SBATCH --cpus-per-task=5
 
-#SBATCH --job-name="pk_pred"
+#SBATCH --job-name="pk_shap"
 #SBATCH --account="punim1449"
 
 #SBATCH --output=slurm_out/%x.%A_%a.out

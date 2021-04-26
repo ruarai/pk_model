@@ -18,10 +18,10 @@ landcover_filenames <- list.files("data/raw/covariates_MAP/landcover",
 
 landcover <- tibble(files = landcover_files, filenames = landcover_filenames)
 
-ref_raster_names <- brick("data/clean/raster/mbs_raster_temporal") %>%
-  names() %>%
-  str_replace("_\\d{4}","") %>%
-  unique()
+include_cov_names <- c("cropland_natural_vegetation_mosaic",
+                       "grasslands",
+                       "savannas",
+                       "woody_savannas")
 
 landcover <- landcover %>%
   filter(!str_detect(filenames, ".aux.xml")) %>%
@@ -29,7 +29,7 @@ landcover <- landcover %>%
   mutate(class_id = as.numeric(str_extract(filenames, "(?<=Class-)\\d{2}"))) %>%
   mutate(class_name = str_extract(filenames, "(?<=Class-\\d{2}_).+?(?=\\.)")) %>%
   mutate(class_name = str_to_lower(class_name)) %>%
-  filter(class_name %in% ref_raster_names) %>%
+  filter(class_name %in% include_cov_names) %>%
   mutate(band_name = glue::glue("{class_name}_{year}")) %>%
   rowwise() %>%
   mutate(raster = list(raster(files)))

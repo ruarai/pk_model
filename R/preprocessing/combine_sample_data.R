@@ -5,7 +5,7 @@ source('code_ruarai/R/functions_parasite.R')
 
 # Inclusive max/min
 year_min <- 2001
-year_max <- 2012
+year_max <- 2019
 
 # Map libraries
 library(raster)
@@ -198,7 +198,7 @@ for (year in year_min:year_max) {
 
 # check which rows in data_covs contain an NA i.e. missing covariates (outside mask)
 outside_idx <- attr(na.omit(data_covs), 'na.action')
-stopifnot(is.null(outside_idx))
+#stopifnot(is.null(outside_idx))
 
 data_covs <- data_covs[-outside_idx,]
 data_samples <- data_samples[-outside_idx,]
