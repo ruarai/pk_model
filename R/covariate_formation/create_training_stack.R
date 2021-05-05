@@ -45,9 +45,9 @@ temporal_limited <- dropLayer(temporal_stack, layers_to_drop)
 
 
 
-writeRaster(temporal_limited,
-            "data/clean/raster_updated/temporal_SEA",
-            overwrite=TRUE)
+#writeRaster(temporal_limited,
+#            "data/clean/raster_updated/temporal_SEA",
+#            overwrite=TRUE)
 
 writeRaster(nontemporal_stack,
             "data/clean/raster_updated/nontemporal_SEA",

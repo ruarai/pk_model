@@ -162,7 +162,9 @@ human_pop <- covs_current[[which(names(covs_current)=='human_pop')]]
 outside_mask <- is.na(raster::extract(human_pop, admin_region_records[,c('Longitude', 'Latitude')]))
 admin_region_records <- admin_region_records[!outside_mask,]
 
-write.csv(admin_region_records, "data/clean/occurrence/pk_present/MBS_MT_polygon_2007-2018.csv", row.names = FALSE)
+write.csv(admin_region_records,
+          "data/raw/occurrence/Pk_merged_coded.csv",
+          row.names = FALSE)
 
 point_records <- point_records %>%
   rename(Unique_ID = ID) %>%

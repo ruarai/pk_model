@@ -1,0 +1,73 @@
+---
+title: "model_interpretation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai")
+```
+
+
+```{r}
+run_unique_name <- "buildup_4"
+
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
+# save this file before run. and ensure variable above is set correctly (before and after!)
+rmarkdown::render('code_ruarai/R_interactive/model_interpretation.Rmd',
+                  output_file = paste0('reports/iml_', run_unique_name, '.html'))
+```
+
+
+```{r}
+
+library(iml)
+library(seegSDM)
+library(gbm)
+
+
+m_data <- readRDS(paste0("output/update/bootstrap_outputs/",run_unique_name,"/1_brt_model_list.Rds"))
+
+
+data_for_model <- readRDS(paste0("output/update/bootstrap_inputs/",run_unique_name,"/1_brt_data_list.Rds"))
+data_for_model <- data_for_model[[1]]
+
+bs_fun <- function(model_list, newdata){
+  rowMeans(do.call(cbind,lapply(m_data, function(gbm_i) predict.gbm(gbm_i$model, newdata))))
+}
+
+X <- data_for_model[,10:ncol(data_for_model)]
+
+model = Predictor$new(m_data, predict.fun = bs_fun, data = X, y = data_for_model$PA)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+
+auc_error = function(actual, predicted) Metrics::auc(actual, predicted)
+
+imp = FeatureImp$new(model, loss = auc_error)
+plot(imp)
+
+```
+
+
+## ALE / Conditional effect
+
+```{r fig.width=12, message=FALSE, warning=FALSE}
+effect = FeatureEffects$new(model, method = "ale")
+
+effect$plot()
+```
+
+
+
+
+
+
+
+
+
+

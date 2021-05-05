@@ -21,7 +21,12 @@ landcover <- tibble(files = landcover_files, filenames = landcover_filenames)
 include_cov_names <- c("cropland_natural_vegetation_mosaic",
                        "grasslands",
                        "savannas",
-                       "woody_savannas")
+                       "woody_savannas",
+                       "open_shrublands",
+                       "permanent_wetlands",
+                       "cropland_natural_vegetation_mosaic",
+                       "croplands",
+                       "urban_and_built_up")
 
 landcover <- landcover %>%
   filter(!str_detect(filenames, ".aux.xml")) %>%

@@ -1,0 +1,102 @@
+---
+title: "bootstrap_effect"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai")
+```
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(raster)
+library(Matrix)
+library(sparseMatrixStats)
+library(Hmisc)
+library(seegSDM)
+
+library(ggplot2)
+```
+
+
+
+
+```{r warning=FALSE}
+full_pred_matrix <- readRDS(file = paste0("output/update/", "FS_data_1000", "_pred_matrix.Rds"))
+
+all_means <- colMeans2(full_pred_matrix)
+all_means[all_means == 0] <- NA
+
+arbitrary_pixel_index <- sample(which(!is.na(all_means)),1)
+```
+
+
+```{r}
+
+hist(full_pred_matrix[1:10,arbitrary_pixel_index], breaks=100, xlim=c(0,1))
+abline(v = mean(full_pred_matrix[1:10,arbitrary_pixel_index]), col='red')
+
+
+hist(full_pred_matrix[1:100,arbitrary_pixel_index], breaks=100, xlim=c(0,1))
+abline(v = mean(full_pred_matrix[1:100,arbitrary_pixel_index]), col='red')
+
+hist(full_pred_matrix[1:1000,arbitrary_pixel_index], breaks=100, xlim=c(0,1))
+abline(v = mean(full_pred_matrix[,arbitrary_pixel_index]), col='red')
+
+```
+
+```{r}
+n_samples <- 30
+n_bootstraps <- c(1,10,20,40,80,100,125,150,200,350,500,800,1000)
+
+mat_samples <- matrix(nrow=length(n_bootstraps), ncol=n_samples)
+
+for(i in 1:n_samples){
+  arbitrary_pixel_index <- sample(which(!is.na(all_means)),1)
+  
+  mean_over_bs <- sapply(n_bootstraps, function(n) { mean(full_pred_matrix[1:n,arbitrary_pixel_index])})
+  
+  mat_samples[,i] <- mean_over_bs
+}
+
+```
+
+```{r}
+plot_data <- as.data.frame(mat_samples) %>% 
+  pivot_longer(cols = everything())
+
+plot_data$n_bs <- rep(n_bootstraps,each=n_samples)
+
+
+ggplot(plot_data) +
+  geom_line(aes(x = n_bs, y = value, group = name)) +
+  geom_point(aes(x = n_bs, y = value, group = name))+
+  geom_vline(xintercept=100, col='gray50')
+```
+
+```{r}
+final_means <- mat_samples[length(n_bootstraps),]
+
+error <- sweep(mat_samples,2,final_means)
+
+plot_data_error <- as.data.frame(error) %>% 
+  pivot_longer(cols = everything())
+
+plot_data_error$n_bs <- rep(n_bootstraps,each=n_samples)
+
+
+ggplot(plot_data_error) +
+  geom_line(aes(x = n_bs, y = value, group = name), alpha=0.5) +
+  ylab("Error from final mean") +
+  geom_vline(xintercept=100, col='gray50')
+
+
+```
+
+
+
+
+
+

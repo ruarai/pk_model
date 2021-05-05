@@ -24,10 +24,16 @@ print("Subsampling polygons...")
 # 62 point records, 133 polygon records
 # get random bootstraps of the data (minimum 10 pres/10 abs)
 data_list <- replicate(nboot,
-                       subsamplePolys(data_all,
-                                      minimum = c(10, 10),
-                                      replace = TRUE),
-                       simplify = FALSE)
+                        subsamplePolys(data_all,
+                                       minimum = c(10, 10),
+                                       replace = TRUE),
+                        simplify = FALSE)
+
+
+# Code for no polygons:
+#data_list <- replicate(nboot,
+#                       subsample(data_all, nrow(data_all) ,replace=TRUE, minimum=c(10,10)),
+#                       simplify = FALSE)
 
 print("Balancing weights...")
 
