@@ -1,0 +1,128 @@
+---
+title: "sample_tables"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
+```
+
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(raster)
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+```{r}
+mt_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
+
+# We do not ever use non-MBS polygons
+mt_data <- mt_data %>%
+  filter(! (Geometry_type == "polygon" & Site_country != "Malaysia"))
+
+# Remove thinned polygons (looking ahead in the processing pipeline here)
+poly_thinned <- read.csv("data/clean/occurrence/pk_present/ALL_occ_thinned.csv") %>%
+  filter(str_detect(Source, "MBS_MT_polygon")) %>%
+  pull(Original_Unique_ID) %>% unique()
+
+
+mt_data <- mt_data %>%
+  filter(Geometry_type == "point" | ID %in% poly_thinned)
+
+
+```
+
+
+```{r}
+data_by_year <- mt_data %>%
+  group_by(Publication_year) %>%
+  summarise(n_pubs = length(unique(Source_primary)),
+            n_data = n())
+
+kbl(data_by_year,
+    col.names = c("Year", "Papers included", "Samples included"),
+    booktabs = TRUE, linesep = "") %>%
+  kable_styling(latex_options = "striped")
+```
+
+
+```{r}
+malaysia_admin1 <- shapefile('data/raw/mbs_maps/mys_admbnda_adm1_unhcr_20210211')
+
+mt_data_with_mys <- mt_data %>%
+  rowwise() %>%
+  mutate(points = list(SpatialPoints(tibble(Longitude, Latitude),
+                                proj4string = CRS("+proj=longlat +datum=WGS84")))) %>%
+  mutate(mys_adm1 = over(points, malaysia_admin1)$ADM1_EN[1]) %>%
+  ungroup() %>%
+  mutate(Region = ifelse(is.na(mys_adm1), Site_country, mys_adm1))
+  
+
+```
+
+```{r}
+data_by_region <- mt_data_with_mys %>%
+  
+  group_by(Site_country, Region, Host, Geometry_type) %>%
+  summarise(n_data = n()) %>%
+  ungroup() %>%
+  
+  pivot_wider(names_from = c(Host, Geometry_type),
+              values_from = c(n_data)) %>%
+  
+  mutate(mosquito_polygon = 0) # No data here!!
+
+
+data_by_region <- data_by_region %>%
+  mutate(across(-c(Site_country, Region),
+                ~ ifelse(is.na(.), 0, .))) %>%
+  
+  mutate(human_total = human_point + human_polygon,
+         monkey_total = monkey_point + monkey_polygon,
+         mosquito_total = mosquito_point + mosquito_polygon) %>%
+  
+  bind_rows(., 
+            filter(., Site_country == "Malaysia") %>%
+              summarise(across(-c(Site_country,Region),sum)) %>%
+              mutate(Region = "Malaysia (Total)",
+                     Site_country = "M_alaysia")) %>%
+  
+  arrange(Site_country, Region) %>% 
+  
+  select(Site_country, Region,
+         human_point, human_polygon, human_total,
+         monkey_point, monkey_polygon, monkey_total,
+         mosquito_point, mosquito_polygon, mosquito_total)
+
+data_by_region <- data_by_region %>%
+  
+  mutate_at(vars(-c(Site_country, Region)),
+         ~ cell_spec(., color = ifelse(. == 0, "#666666", "black"),
+                     format = "latex"))
+  
+kbl(data_by_region %>% select(-Site_country),
+    col.names = c("Country/Region", rep(c("Point", "Polygon", "Total"), times = 3)),
+    booktabs = TRUE, linesep = "",
+    escape = FALSE, format='latex') %>%
+  kable_styling(latex_options = "striped") %>%
+  add_header_above(c("", "Human" = 3, "Macaque" = 3, "Mosquito" = 3)) %>%
+  add_indent(which(data_by_region$Site_country == "Malaysia"))
+
+```
+
+
+
+```{r}
+
+ggplot(data_by_year) +
+  geom_col(aes(x=Publication_year, y = n_pubs))
+
+
+```

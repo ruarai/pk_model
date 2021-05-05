@@ -1,5 +1,5 @@
 
-#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
+setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 
 
 # Map libraries
@@ -144,28 +144,3 @@ exclusion_analysis <- pk_merged %>%
   filter(Exclusion_code != '') %>%
   group_by(Source_primary) %>%
   summarise(exclusions = str_c(unique(Exclusion_code), collapse=' '))
-
-
-
-# Maps:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

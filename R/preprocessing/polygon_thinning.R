@@ -25,9 +25,13 @@ occ_data <- lapply(1:length(occ_data), function(i) {
   uid_offset <- sum(max_uids[0:(i-1)])
   
   x <- occ_data[[i]]
+  source <- occ_files[i]
   # Clean each dataframe so that unique id is of form 1, 2, 3 ..
   # And then add an offset of the previous max unique id
-  x %>% mutate(Unique_ID = match(Unique_ID, unique(Unique_ID)) + uid_offset) 
+  x %>% 
+    mutate(Original_Unique_ID = Unique_ID,
+           Source = source) %>%
+    mutate(Unique_ID = match(Unique_ID, unique(Unique_ID)) + uid_offset) 
 })
 
 # Then finally merge
@@ -108,5 +112,11 @@ occ_data_thinned <- occ_data_thinned %>%
 write.csv(occ_data_thinned,
           "data/clean/occurrence/pk_present/ALL_occ_thinned.csv",
           row.names = FALSE)
+
+
+
+poly_data_thinned_meta <- poly_data_thinned %>%
+  left_join(read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv"),
+            by = c("Original_Unique_ID" = "ID"))
 
 

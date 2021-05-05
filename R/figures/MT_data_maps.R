@@ -175,8 +175,10 @@ p4 <- plot_for_host("monkey") +
 library(cowplot)
 
 p_full <- plot_grid(p1, p2, p3, p4,
-                    nrow = 1,
+                    nrow = 2, ncol=2,
                     align='h')
+
+
 
 plot_legend <- get_legend(
   p1 + 
@@ -187,7 +189,7 @@ plot_legend <- get_legend(
 plot_grid(p_full, plot_legend, ncol = 1, rel_heights = c(1, .2))
 
 ggsave("output/figures/MT_data_maps.pdf",
-       width = 12, height=4)
+       width = 6, height=7)
 
 
 
