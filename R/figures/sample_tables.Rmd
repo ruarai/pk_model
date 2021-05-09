@@ -118,11 +118,3 @@ kbl(data_by_region %>% select(-Site_country),
 ```
 
 
-
-```{r}
-
-ggplot(data_by_year) +
-  geom_col(aes(x=Publication_year, y = n_pubs))
-
-
-```

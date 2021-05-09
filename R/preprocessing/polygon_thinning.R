@@ -90,7 +90,7 @@ ggplot(polygon_size) +
           "Excluding polygons with >1000 cells") 
 
 polygons_include <- polygon_size %>%
-  filter(cell_n <= 100)
+  filter(cell_n <= 250)
 
 
 poly_data_thinned <- poly_data %>%

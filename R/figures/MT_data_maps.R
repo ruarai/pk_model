@@ -100,7 +100,8 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
   labels_for_host <- extra_labels %>%
     filter(Host == host &
              extent_for_host[1] < Latitude & Latitude < extent_for_host[2] &
-             extent_for_host[3] < Longitude & Longitude < extent_for_host[4])
+             extent_for_host[3] < Longitude & Longitude < extent_for_host[4]) %>%
+    bind_rows(points_data %>% filter(Host == host) %>% mutate(Label = "")) # Append without labels to get text_repel to avoid other points
   
   p <- ggplot() +
     geom_sf(data = SEA_simple,
@@ -135,9 +136,9 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
     
     geom_text_repel(data = labels_for_host,
                     mapping = aes(y=Longitude, x = Latitude, label = Label),
-                    box.padding = 1.5,
-                    point.padding=0.2,
-                    nudge_y=0.5, nudge_x = -0.2) +
+                    box.padding = 2,
+                    point.padding=0.1,
+                    nudge_x = -5) +
     
     coord_sf(xlim = extent_for_host[1:2],
              ylim = extent_for_host[3:4],
@@ -189,7 +190,7 @@ plot_legend <- get_legend(
 plot_grid(p_full, plot_legend, ncol = 1, rel_heights = c(1, .2))
 
 ggsave("output/figures/MT_data_maps.pdf",
-       width = 6, height=7)
+       width = 6, height=6)
 
 
 

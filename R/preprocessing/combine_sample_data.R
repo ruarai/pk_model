@@ -79,8 +79,11 @@ for (year in year_min:year_max) {
 outside_idx <- attr(na.omit(data_covs), 'na.action')
 #stopifnot(is.null(outside_idx))
 
-data_covs <- data_covs[-outside_idx,]
-data_samples <- data_samples[-outside_idx,]
+if(!is.null(outside_idx))
+{
+  data_covs <- data_covs[-outside_idx,]
+  data_samples <- data_samples[-outside_idx,]
+}
 
 # Don't perform model matrix creation.
 
