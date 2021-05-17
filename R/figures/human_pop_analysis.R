@@ -59,6 +59,19 @@ ggplot(df_sampled) +
   theme_bw() +
   coord_cartesian(ylim=c(0,0.003))
   
+pop <-df_all %>%
+  filter(source == "MBS" & name == "SEA_access_healthcare")
+
+ggplot() +
+  geom_jitter(data = pop,
+              mapping = aes(x=log(value+1),y=-0.015),
+              height = 0.01, width = 0,
+              size = 0.2) +
+  geom_density(data = pop, mapping = aes(x=log(value+1)),
+               col = '#23598b') +
+  xlab("Value") + ylab("Density") +
+  theme_bw() +
+  ggtitle("Distribution of access_healthcare across the MBS region")
 
 
 library(scales)

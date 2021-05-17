@@ -41,10 +41,12 @@ model_list <- foreach(i=1:length(data_list), .packages = c('gbm3', 'dismo')) %do
   long_index <- match("Longitude", names(bs_data))
   lat_index <- match("Longitude", names(bs_data))
   
+  host_index <- match("Host_species", names(bs_data))
+  
   wt_index <- match("wt", names(bs_data))
   
   m <- runBRT(bs_data,
-              gbm.x = 10:ncol(bs_data),
+              gbm.x = host_index:ncol(bs_data),
               gbm.y = y_index,
               n.folds = 10,
               gbm.coords = c(long_index, lat_index),

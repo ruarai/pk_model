@@ -14,14 +14,7 @@ library(ggrepel)
 
 MT_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
-adm0_shape <- shapefile("data/raw/admin_maps/admin2013_0")
-
-SEA_countries <- c('IND', 'MYS', 'IDN', 'LAO', 'MMR', 'PHL', 'THA', 'VNM', 'KHM', 'CHN', 'BGD')
-
-SEA_shape <- adm0_shape[adm0_shape$COUNTRY_ID %in% SEA_countries,]
-
-SEA_simple <- st_simplify(st_as_sf(SEA_shape), dTolerance = 0.01)
-
+source("code_ruarai/R/figures/maps_common.R")
 
 admin1_shp <- shapefile('data/raw/gadm_maps/gadm36_1.shp')
 admin2_shp <- shapefile('data/raw/gadm_maps/gadm36_2.shp')

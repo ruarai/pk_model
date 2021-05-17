@@ -8,14 +8,9 @@ library(seegSDM)
 
 source('code_ruarai/R/functions_parasite.R')
 
-#human_pop <- raster("data/raw/covariate_production/gee_covs/SEA_access_healthcare.tif")
-
-#human_pop <- sampling_bias
+human_pop <- raster("data/clean/raster_updated/human_pop_MBS")
 
 mbs_mask <- raster("data/clean/raster/mbs_mask")
-
-human_pop <- log(raster("data/clean/raster_updated/human_pop_MBS")+1)
-#human_pop <- raster::crop(human_pop, mbs_mask) * mbs_mask
 
 
 
@@ -33,7 +28,7 @@ host_counts <- host_counts %>%
            filter(Host == host_name) %>%
            nrow())
 
-background_point_n <- 600
+background_point_n <- 6000
 total_presence_n <- sum(host_counts$counts)
 
 host_counts <- host_counts %>%
@@ -122,19 +117,13 @@ plot_point_overlap <- function(point_data){
   
   mbs_vals[as.numeric(names(cell_table))] <- as.vector(cell_table)
   
-  par(mfrow=c(1,1))
-  plot(setValues(mbs_mask, mbs_vals))
-  
-  par(mfrow=c(1,2))
+  plot(mbs_mask, col = 'gray80')
   
   
-  plot(mbs_mask, col = 'gray')
+  
   title("Pseudo-absence/background data")
   plot(SpatialPoints(point_data %>% select(Longitude, Latitude)),
-       add=TRUE, pch='.', col = rgb(0,0,1,0.5), cex = 0.2)
-  hist(cell_table, main = "No. overlaps", xlim=c(0,20), breaks = 50)
-  
-  par(mfrow=c(1,1))
+       add=TRUE, pch='.', col = rgb(0,0,1,0.5), cex = 0.5)
 }
 
 plot_point_overlap(bg_all %>%

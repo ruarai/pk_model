@@ -11,13 +11,7 @@ covs_transfer_names <- c("SRTM_elevation",
                          "nemestrina",
                          "leucosphyrus_group",
                          "fascicularis",
-                         "Pf_temp",
-                         "TCW_SD",
-                         "TCW_mean",
-                         "TCB_SD",
-                         "forest_disturbed",
-                         "forest_intact",
-                         "human_pop")
+                         "Pf_temp")
 
 remove_layers <- setdiff(names(old_covs),covs_transfer_names)
 
