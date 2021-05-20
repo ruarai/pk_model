@@ -4,8 +4,6 @@ library(raster)
 library(tidyverse)
 library(sf)
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 
 
 adm0_shape <- shapefile("data/raw/admin_maps/admin2013_0")

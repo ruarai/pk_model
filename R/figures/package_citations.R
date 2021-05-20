@@ -1,7 +1,3 @@
-
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
-
 cite_packages <- c("tidyverse",
                    "ggplot2",
                    "seegSDM",

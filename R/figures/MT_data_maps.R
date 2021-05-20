@@ -10,8 +10,6 @@ library(tmap)
 
 library(ggrepel)
 
-#setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 MT_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
 source("code_ruarai/R/figures/maps_common.R")

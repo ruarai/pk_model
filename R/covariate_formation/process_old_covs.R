@@ -3,8 +3,6 @@ library(raster)
 
 library(tidyverse)
 
-
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 old_covs <- brick("data/clean/raster/SEAsia_covs")
 
 covs_transfer_names <- c("SRTM_elevation",

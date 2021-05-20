@@ -1,7 +1,5 @@
 
 library(tidyverse)
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 mt_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
 fs_data <- read.csv("data/clean/occurrence/pk_present/MBS_FS_B_2005-2014.csv")

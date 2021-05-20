@@ -3,9 +3,6 @@ library(raster)
 library(tidyverse)
 
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
-
 lossyear_raster <- brick("data/raw/covariate_production/global_forest_change/lossyear_downscale.tif")
 
 

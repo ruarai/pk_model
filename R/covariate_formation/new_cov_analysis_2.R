@@ -7,8 +7,6 @@ library(tidyverse)
 library(infotheo)
 library(colorspace)
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 all_covariates <- brick("data/clean/raster_updated/prediction_SEA.grd")
 
 risk <- raster("data/clean/raster/SEAsia_FS.tif")

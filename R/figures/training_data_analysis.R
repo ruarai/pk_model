@@ -10,8 +10,6 @@ library(scales)
 library(ggforce)
 
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 data_FS <- read.csv("data/clean/occurrence/pk_present/MBS_FS_B_2005-2014.csv") %>%
   filter(Geometry_type == "point")
 

@@ -4,9 +4,6 @@ library(raster)
 library(tidyverse)
 
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
-
 risk_4c <- raster("output/update/rasters/buildup_4c_risk_mean.tif")
 
 pred_SEA <- brick("data/clean/raster_updated/prediction_SEA")

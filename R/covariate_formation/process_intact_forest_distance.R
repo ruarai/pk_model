@@ -3,8 +3,6 @@ library(raster)
 library(tidyverse)
 
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 
 # Produced by gdal_distance in QGIS
 # I was unable to make this automated in R!!

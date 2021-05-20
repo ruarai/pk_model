@@ -1,5 +1,3 @@
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 library(raster)
 library(tidyverse)
 

@@ -3,8 +3,6 @@
 library(raster)
 library(tidyverse)
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 
 pred_SEA <- brick("data/clean/runs/4c/raster_updated/prediction_SEA")
 

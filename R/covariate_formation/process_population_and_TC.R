@@ -4,8 +4,6 @@ library(tidyverse)
 
 library(raster)
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 
 blank <- raster("data/clean/raster/SEAsia_extent")
 blank[!is.na(blank)] <- 1

@@ -3,8 +3,6 @@ library(raster)
 library(tidyverse)
 
 
-setwd("C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
-
 
 temporal_inputs <- list.files("data/raw/covariate_production/temporal_final/",
                               pattern="*.grd",
