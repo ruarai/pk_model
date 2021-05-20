@@ -9,11 +9,6 @@ knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai")
 ```
 
 
-```{r}
-run_unique_name <- "buildup_4"
-
-```
-
 ```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
 # save this file before run. and ensure variable above is set correctly (before and after!)
 rmarkdown::render('code_ruarai/R_interactive/model_interpretation.Rmd',
@@ -24,29 +19,35 @@ rmarkdown::render('code_ruarai/R_interactive/model_interpretation.Rmd',
 ```{r}
 
 library(iml)
+library(dplyr)
 library(seegSDM)
 library(gbm)
 
 
-m_data <- readRDS(paste0("output/update/bootstrap_outputs/",run_unique_name,"/1_brt_model_list.Rds"))
 
 
-data_for_model <- readRDS(paste0("output/update/bootstrap_inputs/",run_unique_name,"/1_brt_data_list.Rds"))
-data_for_model <- data_for_model[[1]]
+m_list <- readRDS(paste0("output/update/bootstrap_outputs/",run_unique_name,"/1_brt_model_list.Rds"))
+
+m_input_data <- readRDS(paste0("output/update/bootstrap_inputs/", run_unique_name, "/1_brt_data_list.Rds"))
+m_input_data <- m_input_data[[1]]
 
 bs_fun <- function(model_list, newdata){
-  rowMeans(do.call(cbind,lapply(m_data, function(gbm_i) predict.gbm(gbm_i$model, newdata))))
+  rowMeans(do.call(cbind,lapply(m_list, function(gbm_i) predict.gbm(gbm_i$model, newdata))))
 }
 
-X <- data_for_model[,10:ncol(data_for_model)]
+y <- m_input_data$PA
 
-model = Predictor$new(m_data, predict.fun = bs_fun, data = X, y = data_for_model$PA)
+X <- m_input_data[,10:ncol(m_input_data)]
+
+
+
+model = Predictor$new(m_list, predict.fun = bs_fun, data = X, y = y)
 ```
 
 
 ```{r message=FALSE, warning=FALSE}
 
-auc_error = function(actual, predicted) Metrics::auc(actual, predicted)
+auc_error = function(actual, predicted) 1 - Metrics::auc(actual, predicted)
 
 imp = FeatureImp$new(model, loss = auc_error)
 plot(imp)
@@ -61,9 +62,6 @@ effect = FeatureEffects$new(model, method = "ale")
 
 effect$plot()
 ```
-
-
-
 
 
 

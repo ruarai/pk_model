@@ -9,9 +9,9 @@ source("code_ruarai/R/figures/maps_common.R")
 
 species_extent <- raster("data/clean/raster_updated/reservoir_vector_extent")
 
-risk_raster <- raster("output/update/rasters/buildup_4c_risk_mean.tif")
+risk_raster <- raster("data/clean/raster/SEAsia_FS.tif")
 
-risk_df <- as.data.frame(risk_raster * species_extent, xy=TRUE)
+risk_df <- as.data.frame(risk_raster, xy=TRUE)
 colnames(risk_df) <- c("x", "y", "risk")
 
 ggplot(risk_df) +

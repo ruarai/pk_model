@@ -21,7 +21,7 @@ all_data_by_year$Source <- factor(all_data_by_year$Source, c("MT","FS"))
 ggplot(all_data_by_year) +
   geom_col(aes(x=Year, y = n_data, fill = Source), position='stack') +
   scale_fill_manual(values = c("FS" = "#98bfd9", "MT" = "#c7e9c0"),
-                    labels = c("FS" = "Prior database (Freya et al.)",
+                    labels = c("FS" = "Prior database (Shearer et al.)",
                                "MT" =  "Current study")) +
   xlab("Year of study start") + ylab("Sample count") +
   scale_x_continuous(breaks = seq(0,10000,by=2),

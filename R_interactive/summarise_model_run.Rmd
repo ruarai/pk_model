@@ -40,9 +40,30 @@ pred_sd[pred_sd == 0] <- NA
 plot(setValues(blank_seasia, pred_means), col = cols, zlim=c(0,1))
 title("Predicted risk means", run_unique_name)
 
+writeRaster(setValues(blank_seasia, pred_means),
+            paste0("output/update/rasters/", run_unique_name, "_risk_mean.tif"),
+            overwrite = TRUE,
+            format = "GTiff")
+
 
 plot(setValues(blank_seasia, pred_sd))
 title("Predicted risk standard deviation", run_unique_name)
+
+
+writeRaster(setValues(blank_seasia, pred_sd),
+            paste0("output/update/rasters/", run_unique_name, "_risk_sd.tif"),
+            overwrite = TRUE,
+            format = "GTiff")
+```
+
+```{r}
+hist(pred_means, xlab='Risk mean', main='', breaks=100)
+title(run_unique_name)
+
+hist(pred_sd, xlab='Risk SD', main='', xlim=c(0,0.3), breaks = 100)
+title(run_unique_name)
+
+
 ```
 
 ```{r}
