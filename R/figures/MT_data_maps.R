@@ -12,7 +12,7 @@ library(ggrepel)
 
 MT_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 admin1_shp <- shapefile('data/raw/gadm_maps/gadm36_1.shp')
 admin2_shp <- shapefile('data/raw/gadm_maps/gadm36_2.shp')

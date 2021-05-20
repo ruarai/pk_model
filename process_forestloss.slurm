@@ -27,7 +27,7 @@ gdalinfo --version
 
 #for i in {1..54}
 #do
-#    time python code_ruarai/Python/forestloss.py $i
+#    time python code/Python/forestloss.py $i
 #done
 
-time python code_ruarai/Python/forestloss.py 1
+time python code/Python/forestloss.py 1

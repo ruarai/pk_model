@@ -27,6 +27,6 @@ gdalinfo --version
 
 for i in {1..54}
 do
-    time python code_ruarai/Python/forestextent.py $i ${SLURM_CPUS_PER_TASK}
+    time python code/Python/forestextent.py $i ${SLURM_CPUS_PER_TASK}
 done
 

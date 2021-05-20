@@ -3,7 +3,7 @@
 library(raster)
 library(tidyverse)
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 
 
@@ -31,7 +31,7 @@ mbs_overlaps <- setValues(mbs_mask, mbs_vals)
 poly_occ <- poly_occ %>%
   distinct(Unique_ID, .keep_all = TRUE)
 
-source("code_ruarai/R/figures/admin_common.R")
+source("code/R/figures/admin_common.R")
 
 adm1_occ <- get_polygons_1(poly_occ %>% select("Longitude", "Latitude"))
 adm2_occ <- get_polygons_2(poly_occ %>% select("Longitude", "Latitude"))

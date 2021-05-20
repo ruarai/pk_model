@@ -31,4 +31,4 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-time python code_ruarai/Python/forestloss_merge.py $1 $2
+time python code/Python/forestloss_merge.py $1 $2

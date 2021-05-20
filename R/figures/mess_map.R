@@ -4,7 +4,7 @@
 library(raster)
 library(tidyverse)
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 data_all <- read.csv("data/clean/occurrence/data_all.csv")
 

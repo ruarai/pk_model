@@ -1,7 +1,7 @@
 library(raster)
 library(tidyverse)
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 test_data_FS <- read.csv("data/raw/occurrence/presence_absence_ex-MSB_confirmed.csv")
 

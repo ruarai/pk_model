@@ -11,7 +11,7 @@ knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai")
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
 # save this file before run. and ensure variable above is set correctly (before and after!)
-rmarkdown::render('code_ruarai/R_interactive/model_interpretation.Rmd',
+rmarkdown::render('code/R_interactive/model_interpretation.Rmd',
                   output_file = paste0('reports/iml_', run_unique_name, '.html'))
 ```
 

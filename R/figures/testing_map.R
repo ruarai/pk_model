@@ -2,7 +2,7 @@
 library(raster)
 library(tidyverse)
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 test_points <- read.csv("data/clean/occurrence/testing/test_points.csv")
 stopifnot(all(test_points$PA == 1))

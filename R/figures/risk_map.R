@@ -2,7 +2,7 @@
 library(raster)
 library(tidyverse)
 
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 
 species_extent <- raster("data/clean/raster_updated/reservoir_vector_extent")
 

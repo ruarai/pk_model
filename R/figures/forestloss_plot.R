@@ -4,7 +4,7 @@ library(tidyverse)
 
 library(viridis)
 library(ggplot2)
-source("code_ruarai/R/figures/maps_common.R")
+source("code/R/figures/maps_common.R")
 plot_raster <- function(recent_loss, title, ext){
   df <- as.data.frame(recent_loss, xy=TRUE)
   names(df) <- c("x","y","layer")

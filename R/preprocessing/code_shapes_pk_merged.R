@@ -25,8 +25,8 @@ point_records <- pk_merged %>%
 
 
 
-source("code_ruarai/R/figures/maps_common.R")
-source("code_ruarai/R/figures/admin_common.R")
+source("code/R/figures/maps_common.R")
+source("code/R/figures/admin_common.R")
 
 
 

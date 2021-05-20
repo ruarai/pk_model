@@ -4,7 +4,7 @@
 library(raster)
 library(seegSDM)
 
-source('code_ruarai/R/functions_parasite.R')
+source('code/R/functions_parasite.R')
 
 human_pop <- raster("data/clean/raster_updated/human_pop_MBS")
 

@@ -7,7 +7,7 @@ set.seed(1)
 
 data_all <- read.csv("data/clean/occurrence/data_all.csv")
 
-source('code_ruarai/R/functions_parasite.R')
+source('code/R/functions_parasite.R')
 
 
 run_unique_name <- commandArgs(trailingOnly = TRUE)[1]

@@ -32,4 +32,4 @@ module load r/4.0.0
 module load gdal/3.0.2-python-3.7.4
 
 
-time Rscript code_ruarai/R/join_predictions.R $1
+time Rscript code/R/join_predictions.R $1

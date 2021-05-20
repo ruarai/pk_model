@@ -31,4 +31,4 @@ module load gdal/3.0.2-python-3.7.4
 
 date
 
-time Rscript code_ruarai/R/model_run.R ${SLURM_ARRAY_TASK_ID} $1 ${SLURM_CPUS_PER_TASK}
+time Rscript code/R/model_run.R ${SLURM_ARRAY_TASK_ID} $1 ${SLURM_CPUS_PER_TASK}

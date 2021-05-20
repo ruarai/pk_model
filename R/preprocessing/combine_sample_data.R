@@ -3,7 +3,7 @@
 library(raster)
 library(seegSDM)
 
-source('code_ruarai/R/functions_parasite.R')
+source('code/R/functions_parasite.R')
 
 # Inclusive max/min
 year_min <- 2001
@@ -17,9 +17,9 @@ library(stringr)
 library(dplyr)
 library(tidyr)
 
-source("code_ruarai/R/preprocessing/polygon_thinning.R")
+source("code/R/preprocessing/polygon_thinning.R")
 
-source("code_ruarai/R/preprocessing/create_background_data.R")
+source("code/R/preprocessing/create_background_data.R")
 
 occ_all <- read.csv("data/clean/occurrence/pk_present/ALL_occ_thinned.csv")
 

@@ -3,7 +3,7 @@ library(raster)
 library(tidyverse)
 library(sf)
 
-source("code_ruarai/R/figures/bbox_to_sp.R")
+source("code/R/figures/bbox_to_sp.R")
 
 adm0_shape <- shapefile("data/raw/admin_maps/admin2013_0")
 
