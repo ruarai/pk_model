@@ -111,9 +111,3 @@ write.csv(occ_data_thinned,
           row.names = FALSE)
 
 
-
-poly_data_thinned_meta <- poly_data_thinned %>%
-  left_join(read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv"),
-            by = c("Original_Unique_ID" = "ID"))
-
-
