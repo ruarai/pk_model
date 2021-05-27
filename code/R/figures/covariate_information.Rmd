@@ -1,10 +1,12 @@
 ---
-title: "Covariate Information"
+title: "Covariate Update Overview"
 header-includes:
 - \usepackage{pdflscape}
+- \usepackage{pdfpages}
 - \newcommand{\blandscape}{\begin{landscape}}
 - \newcommand{\elandscape}{\end{landscape}}
 output: pdf_document
+classoption: a4paper
 ---
 
 ```{r setup, include=FALSE}
@@ -12,24 +14,44 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = "C:/Users/ruarai/Dropbox/ZOOMAL - Spatial Modelling/model_update")
 ```
 
-This document describes the current covariate set to be included for use in the updated risk model for \textit{P. knowlesi}. Major changes from the original risk model include:
+This document describes the current covariate set to be included for use in the updated risk model for \textit{P. knowlesi}. Major changes from the 2015 risk model include:
 
 \begin{itemize}
-  \item Replacement of \textbf{urban accessibility} with \textbf{access to healthcare}
-  \item Conversion of \textbf{human population} and \textbf{tasseled-cap transformed layers} to be temporally
-        varying with year
+  \item Addition of 338 new \textit{Plasmodium knowlesi} occurrence/absence data points, bringing the total
+        number of data points to 533.
+  \item Updating the most recent year of the annual environmental covariates from 2013 to 2019.
+  \item Replacement of \textbf{urban accessibility} (JRC-IES) with \textbf{access to healthcare} (Malaria Atlas Project)
   \item Addition of the \textbf{topographic diversity} covariate to describe the variety of habitats available within a region
   \item Replacement of the \textbf{intact forests} and \textbf{disturbed forests} covariates with
         \textbf{forest coverage} and \textbf{forest loss} derived from the \textit{Global Forest Change} project.
 \end{itemize}
 
-It is not currently clear what the best method for describing forest loss in terms of the \textit{Global Forest Change} data is. We present a number of potential options for different transformations of the data on page \pageref{forest_loss}.
+
+\textbf{Temperature Suitability Index}
+
+We currently use the temperature suitability index for \textit{P. falciparum} constructed by Gething et al. \cite{gething2011modelling} as a proxy for the temperature suitability of \textit{P. knowlesi}.
+
+The temperature suitability index describes the relative effect of temperature on the basic reproduction number of a malaria parasite and vector combination. For differing \textit{Plasmodium} species, this varies solely upon the extrinsic incubation period (or sporogony period), the period of time required for "parasites to develop in the mosquito from point of ingestion via an infected blood meal, through to the point at which sporozoites enter the salivary glands and the mosquito becomes infectious" \cite{ohm2018rethinking}. We have not found sufficient data within existing literature to construct a model between temperature and extrinsic incubation period for \textit{P. knowlesi} (see Chan and Johansson for similar work on constructing such a model for Dengue \cite{chan2012incubation}).
+
+
+\textbf{Forest Coverage Loss Data}
+\label{forest_loss}
+
+The original \textit{P. knowlesi} risk model used data from the \textit{Intact Forest Landscapes} project (\url{intactforests.org}) consisting of one \textbf{intact forests} layer and one \textbf{disturbed forests} layer. This dataset was manually constructed with a strict definition for what defines an `intact' forest, where no signs of human activity are visible whilst still remaining contiguously large enough that a diversity of species could inhabit it. However, the strict definition of intact forest and lack of temporal variation when describing disturbed forests likely means we do not capture as much predictive power from forest change as we otherwise could.
+
+Instead, we propose using the \textit{Global Forest Change} (\url{doi.org/10.1126/science.1244693}) dataset that describes yearly observed forest loss over the last 20 years at a 25m resolution, where forest coverage is defined as any vegetation observed over 5m in height. This has the advantage of being well defined across both our landscape and our time period of interest. From this we can construct, for each of the years 2000-2019, the proportion of forest coverage observed on that year at our 5km$^2$ resolution (our \textbf{forest coverage} covariate).
+
+Similarly we can construct a \textbf{forest loss} covariate consisting of the proportion of land where a loss in forest coverage has occurred recently. However, we are not sure as to the most biologically appropriate time-frame to define as `recent', where the ideal time-frame best captures the effect of deforestation on \textit{P. knowlesi} transmission (for example, a time-frame of 3 years would mean we assume that deforestation that has occurred at any point over the last three years could have contributed to a current infection event). We have constructed three potential time-frames and present them on the following page.
+
+
+
+\includepdf[pages=-,landscape=true]{../../../output/figures/MBS_forestloss.pdf}
+
 
 \blandscape
 \pagebreak
 
 ```{r message=FALSE, warning=FALSE}
-library(raster)
 library(kableExtra)
 library(dplyr)
 library(tidyr)
@@ -47,10 +69,10 @@ cov_table <- covinfo %>%
   mutate(temporal = cell_spec(temporal, color = ifelse(temporal == "Yes", "#666666", "black"), format = "latex"))
 
 kbl(cov_table,
-    caption = "Covariate candidates",
+    caption = "Candidate covariate set",
     col.names = c("Covariate name",
-                  linebreak("In old\n model"),
-                  linebreak("Time\nvarying"),
+                  linebreak("In 2015\n model"),
+                  linebreak("Annually\n varying"),
                   "Description",
                   "Notes",
                   "Source"),
@@ -68,29 +90,12 @@ kbl(cov_table,
   pack_rows("MODIS/IGBP Landcover", 10, 17) %>%
   pack_rows("Tree and Forest Coverage", 18, 19)  %>%
   pack_rows("New Covariates", 20, 21) %>%
-  column_spec(6, color = "#111111")
+  column_spec(6, color = "#111111") %>%
+  footnote(number = c("Annually varying covariates are those for which we have data available for each year between 2001 and 2019 (inclusive), which we assign"))
 ```
 
 
-
 \elandscape
-\pagebreak
-
-\textbf{Forest Coverage Loss Data}
-\label{forest_loss}
-
-The original \textit{P. knowlesi} risk model used data from the \textit{Intact Forest Landscapes} project (\url{intactforests.org}) consisting of one \textbf{intact forests} layer and one \textbf{disturbed forests} layer. This dataset was manually constructed with a strict definition for what defines an `intact' forest, where no signs of human activity are visible whilst still remaining contiguously large enough that a diversity of species could inhabit it. However, the strict definition of intact forest and lack of temporal variation when describing disturbed forests likely means we do not capture as much predictive power from forest change as we otherwise could.
-
-Instead, we propose using the \textit{Global Forest Change} (\url{doi.org/10.1126/science.1244693}) dataset that describes yearly observed forest loss over the last 20 years at a 25m resolution, where forest coverage is defined as any vegetation observed over 5m in height. This has the advantage of being well defined across both our landscape and our time period of interest. From this we can construct, for each of the years 2000-2019, the proportion of forest coverage observed on that year at our 5km$^2$ resolution (our \textbf{forest coverage} covariate).
-
-Similarly we can construct a \textbf{forest loss} covariate consisting of the proportion of land where a loss in forest coverage has occurred recently. However, we are not sure as to the most biologically appropriate time-frame to define as `recent', where the ideal time-frame best captures the effect of deforestation on \textit{P. knowlesi} transmission (for example, a time-frame of 3 years would mean we assume that deforestation that has occurred at any point over the last three years could have contributed to a current infection event). We have constructed three potential time-frames and present them below:
-
-
-\begin{center}
-\includegraphics[width=8in]{../../../output/figures/MBS_forestloss.pdf}
-\end{center}
-
-
 \pagebreak
 
 \bibliographystyle{unsrt}  
