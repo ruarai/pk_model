@@ -1,0 +1,54 @@
+---
+title: "Covariate Update Overview"
+header-includes:
+- \usepackage{pdflscape}
+- \usepackage{pdfpages}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
+output: pdf_document
+classoption: a4paper
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai/")
+```
+
+```{r message=FALSE, warning=FALSE}
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+\renewcommand{\arraystretch}{1.1}
+
+```{r}
+covinfo <- read.csv("resources/covariate_information.csv")
+
+cov_table <- covinfo %>%
+  dplyr::select(-c(cov_codename, in_FS, temporal, notes))
+
+kbl(cov_table,
+    caption = "Candidate covariate set",
+    col.names = c("Covariate name",
+                  "Description",
+                  "Source"),
+    booktabs = TRUE,
+    linesep = "",
+    escape = FALSE,
+    
+    format = "latex") %>%
+  kable_styling(font_size = 8,
+                full_width = TRUE,
+                latex_options = "striped") %>%
+  pack_rows("Species Distribution", 1, 3) %>%
+  pack_rows("Various", 4, 10) %>%
+  pack_rows("MODIS/IGBP Landcover", 11, 18) %>%
+  pack_rows("Tree and Forest Coverage", 19, 20)
+```
+
+\bibliographystyle{unsrt}  
+\bibliography{references} 
+
+

@@ -26,7 +26,7 @@ host_counts <- host_counts %>%
            filter(Host == host_name) %>%
            nrow())
 
-background_point_n <- 6000
+background_point_n <- 10000
 total_presence_n <- sum(host_counts$counts)
 
 host_counts <- host_counts %>%

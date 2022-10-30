@@ -3,13 +3,14 @@ library(tidyverse)
 
 source("code/R/figures/maps_common.R")
 
-test_data_FS <- read.csv("data/raw/occurrence/presence_absence_ex-MSB_confirmed.csv")
+test_data_FS <- read.csv("data/raw/occurrence/presence_absence_ex-MSB_confirmed.csv") %>%
+  rename(Site_country = Country)
 
 test_data_MT <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
 
 
-test_data_all <- bind_rows(test_data_MT)
+test_data_all <- bind_rows(test_data_FS, test_data_MT)
 
 
 
@@ -19,8 +20,8 @@ test_points <- SpatialPoints(test_data_all %>% select("Longitude", "Latitude"),
 over_mbs <- over(test_points, as(MBS_simple, 'Spatial'))
 
 test_data <- test_data_all %>%
-  filter(is.na(over_mbs$COUNTRY_ID)) %>%
-  rename(Unique_ID = ID, Site_country = Country) %>%
+  #filter(is.na(over_mbs$COUNTRY_ID)) %>%
+  rename(Unique_ID = ID) %>%
   mutate(PA = factor(Presence)) %>%
   select(Unique_ID, PA, Longitude, Latitude, Year, Geometry_type, Host, Admin_level,
          Gaul_code, Polygon_code, Site_country) %>%

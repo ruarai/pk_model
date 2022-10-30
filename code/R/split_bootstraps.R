@@ -14,7 +14,7 @@ run_unique_name <- commandArgs(trailingOnly = TRUE)[1]
 
 
 n_bootstraps_per_task <- 5
-n_tasks <- 10
+n_tasks <- 100
 
 nboot <- n_bootstraps_per_task * n_tasks
 

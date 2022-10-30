@@ -70,7 +70,7 @@ for (year in year_min:year_max) {
   data_covs[data_sourced$Year_Constrained == year,] <- covs_year_extract[, match]
 }
 
-data_covs_temporal <- data_covs %>% data.frame() %>% select(all_of(now_temporal))
+data_covs_temporal <- data_covs %>% data.frame()
 data_covs_temporal$source <- data_sourced$source
 data_covs_temporal$year <- data_sourced$Year_Constrained
 
@@ -91,7 +91,7 @@ match <- match(colnames(data_covs_nontemporal), colnames(covs_2012_extract))
 
 data_covs_nontemporal[,] <- covs_2012_extract[, match]
 
-data_covs_nontemporal <- data_covs_nontemporal %>% data.frame() %>% select(all_of(now_temporal))
+data_covs_nontemporal <- data_covs_nontemporal %>% data.frame() 
 
 data_covs_nontemporal$source <- data_sourced$source
 data_covs_nontemporal$year <- data_sourced$Year_Constrained

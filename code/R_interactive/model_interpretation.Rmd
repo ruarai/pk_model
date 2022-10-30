@@ -9,11 +9,6 @@ knitr::opts_knit$set(root.dir = "/data/gpfs/projects/punim1449/knowlesi_ruarai")
 ```
 
 
-```{r message=FALSE, warning=FALSE, include=FALSE, eval=FALSE}
-# save this file before run. and ensure variable above is set correctly (before and after!)
-rmarkdown::render('code/R_interactive/model_interpretation.Rmd',
-                  output_file = paste0('reports/iml_', run_unique_name, '.html'))
-```
 
 
 ```{r}
@@ -37,7 +32,9 @@ bs_fun <- function(model_list, newdata){
 
 y <- m_input_data$PA
 
-X <- m_input_data[,10:ncol(m_input_data)]
+host_index <- match("Host_species", names(m_input_data))
+
+X <- m_input_data[,host_index:ncol(m_input_data)]
 
 
 
@@ -57,12 +54,80 @@ plot(imp)
 
 ## ALE / Conditional effect
 
-```{r fig.width=12, message=FALSE, warning=FALSE}
+```{r fig.width=12, fig.height=8, message=FALSE, warning=FALSE}
 effect = FeatureEffects$new(model, method = "ale")
 
 effect$plot()
 ```
 
+
+
+## Shapley Values
+
+```{r}
+
+pred_raster <- brick("data/clean/raster_updated/prediction_SEA")
+pred_df <- as.data.frame(pred_raster, xy=T)
+pred_df$Host_species <- 3
+
+non_na_rows <- which(!is.na(pred_df$SRTM_elevation))
+
+sample_rows <- sample(non_na_rows, 2000)
+
+
+plot(pred_raster[['SRTM_elevation']])
+points(pred_df[sample_rows,c("x","y")], pch='.', col='blue')
+
+```
+
+```{r}
+shap <- Shapley$new(model, sample.size=100)
+
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+
+library(doMC)
+
+sample_row_data <- pred_df[sample_rows,] %>%
+  dplyr::select(-c(x,y)) %>%
+  dplyr::select(names(X))
+
+registerDoMC(cores = 8)
+
+shap_explains <- foreach(i=1:nrow(sample_row_data), 
+                         .packages = c('iml'),
+                         .inorder = F) %dopar% {
+  shap$explain(sample_row_data[i,])
+  
+  shap$results
+}
+
+
+shap_all <- bind_rows(shap_explains)
+
+shap_all <- shap_all  %>%
+  mutate(feature_val = str_extract(feature.value, "(?<==).+$") %>%
+           as.numeric())
+
+
+shap_all$feature <- factor(shap_all$feature,levels = imp$results$feature)
+```
+
+
+```{r fig.width=12, fig.height=8, message=FALSE, warning=FALSE}
+
+ggplot(shap_all) +
+  geom_hline(yintercept=0, size=0.1, color='blue') +
+  geom_point(aes(x = feature_val,
+                 y = phi),
+             size = 0.5, stroke = 0) +
+  facet_wrap(~feature, scales="free_x") +
+  theme_bw() 
+
+
+```
 
 
 

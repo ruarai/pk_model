@@ -18,8 +18,6 @@
 
 #SBATCH --time=0-1:00:00
 
-#SBATCH --mem=24G
-
 date
 
 if [ $# -eq 0 ]

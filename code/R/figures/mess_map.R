@@ -25,26 +25,9 @@ mess_binary <- (mess_raster[['rmess']] >= 0) * (sea_mask)
 mess_df <- as.data.frame(mess_binary, xy=TRUE)
 mess_df$layer <- factor(mess_df$layer)
 
-ggplot(mess_df) +
-  geom_raster(aes(x=x, y=y, fill = layer)) +
-  scale_fill_manual(values = c('0' = '#98bfd9', '1' = '#cc331a'),
-                    name = NULL,
-                    labels = c('0' = "Extrapolation", '1' = "Interpolation"),
-                    na.translate = FALSE) +
-  
-  geom_sf(data = SEA_simple,
-          col=rgb(1,1,1,0.3),
-          fill=NA,
-          size = 0.1) +
-  
-  coord_sf(xlim = extent(sea_mask)[1:2],
-           ylim = extent(sea_mask)[3:4],
-           expand=FALSE,
-           datum = NA) +
-  
-  theme(panel.background = element_rect(fill='white'),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        legend.position = c(0.7,0.7))
+mess_df %>% write_rds("output/update/mess_df.rds")
 
 
-ggsave("output/figures/SEA_mess.pdf", width = 6, height = 4)
+aspect_ratio <- dim(pred_raster)[1] / dim(pred_raster)[2] 
+ggsave("output/figures/SEA_mess.png",
+       width = 9, height = 9 * aspect_ratio)

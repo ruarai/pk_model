@@ -5,17 +5,17 @@
 
 
 #SBATCH --ntasks=1
-#SBATCH --time=0-04:00:00
+#SBATCH --time=0-02:00:00
 #SBATCH --array=1-100
-#SBATCH --cpus-per-task=5
+#SBATCH --cpus-per-task=1
 
 #SBATCH --output=slurm_out/%x.%A_%a.out
 #SBATCH --error=slurm_out/%x.%A_%a.error
 
-#SBATCH --job-name="pk_brt"
+#SBATCH --job-name="pk_eval"
 #SBATCH --account="punim1449"
 
-#SBATCH --mem=48G
+#SBATCH --mem=12G
 
 date
 
@@ -26,11 +26,10 @@ if [ $# -eq 0 ]
 fi
 
 # Load required modules
-module load r/4.0.0
-module load gdal/3.0.2-python-3.7.4
+module load foss/2020b
+module load r/4.0.4
+module load rgdal/1.5-23-r-4.0.4
 
 date
 
-time Rscript code/R/model_run.R ${SLURM_ARRAY_TASK_ID} $1 ${SLURM_CPUS_PER_TASK}
-
-time Rscript code/R/produce_predictions.R ${SLURM_ARRAY_TASK_ID} $1 ${SLURM_CPUS_PER_TASK}
+time Rscript code/R/evaluation/eval_IML.R ${SLURM_ARRAY_TASK_ID} $1

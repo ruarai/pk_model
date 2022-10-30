@@ -1,4 +1,5 @@
 
+library(raster)
 library(tidyverse)
 
 new_cov_files <- list.files("data/raw/covariate_production/gee_covs/", pattern="*.tif",
@@ -7,7 +8,6 @@ new_cov_files <- list.files("data/raw/covariate_production/gee_covs/", pattern="
 new_cov_bandnames <- list.files("data/raw/covariate_production/gee_covs/", pattern="*.tif") %>%
   str_replace(".tif","")
 
-library(raster)
 
 blank <- raster("data/clean/raster/SEAsia_extent")
 blank[!is.na(blank)] <- 1

@@ -1,8 +1,7 @@
 
-
+library(raster)
 library(tidyverse)
 
-library(raster)
 
 
 blank <- raster("data/clean/raster/SEAsia_extent")
@@ -35,7 +34,10 @@ process_oneoffs <- function(dirpath, varname){
   
   names(raster_stacked) <- raster_meta$bandname
   
-  writeRaster(raster_stacked, glue::glue("data/raw/covariate_production/temporal_final/{varname}_stack"), format="raster")  
+  writeRaster(raster_stacked,
+              glue::glue("data/raw/covariate_production/temporal_final/{varname}_stack"),
+              format="raster",
+              overwrite=TRUE)  
 }
 process_oneoffs("data/raw/covariates_MAP/WorldPop/",
                 "human_pop")

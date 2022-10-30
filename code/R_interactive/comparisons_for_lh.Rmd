@@ -1,0 +1,104 @@
+---
+title: "comparisons_for_lh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(raster)
+library(Matrix)
+library(sparseMatrixStats)
+library(Hmisc)
+library(seegSDM)
+
+library(ggplot2)
+```
+
+
+
+```{r warning=FALSE}
+full_pred_matrix <- readRDS(file = paste0("output/update/", "final_1", "_pred_matrix.Rds"))
+blank_seasia <- raster('data/clean/raster/SEAsia_extent.grd')
+
+cols <- colorRampPalette(c("#55843b","#ffffbf", "#6c0043"))(100)
+
+fs_risk_mean <- raster("data/clean/raster/SEAsia.tif")
+```
+
+```{r}
+
+pred_means <- colMeans2(full_pred_matrix)
+pred_sd <- colSds(full_pred_matrix)
+
+pred_means[pred_means == 0] <- NA
+pred_sd[pred_sd == 0] <- NA
+
+pred_means_raster <- setValues(blank_seasia, pred_means)
+pred_sd_raster <- setValues(blank_seasia, pred_sd)
+
+```
+
+
+```{r}
+library(RColorBrewer)
+
+risk_mean_diff <- pred_means_raster - fs_risk_mean
+
+cols_diff_a <- colorRampPalette(RColorBrewer::brewer.pal(11, "RdBu"))(100)
+cols_diff_b <- colorRampPalette(RColorBrewer::brewer.pal(11, "PiYG"))(100)
+
+borneo_x <- c(108,121)
+borneo_y <- c(-4,5)
+
+```
+
+Difference in means map: just subtracting mean risks (new - old), with a highlight on Borneo:
+
+```{r}
+plot(risk_mean_diff,
+     main = "Difference in risk mean (new model - original model)",
+     col = cols_diff_a)
+
+
+plot(risk_mean_diff,
+     main = "Difference in risk mean (new model - original model)",
+     col = cols_diff_a,
+     xlim = borneo_x, ylim = borneo_y)
+```
+
+QQ plot: probably not helpful right now but hey!
+
+```{r}
+tib <- tibble(mean_old = getValues(fs_risk_mean),
+              mean_new = pred_means) %>%
+  pivot_longer(cols = c("mean_old","mean_new"))
+
+qq(name ~ value,tib )
+
+```
+
+
+```{r}
+mean_lh <- raster("data/clean/raster/mean_sd_raster_lh.tif")
+
+mean_lh_adj <- setValues(blank_seasia,
+                         boot::inv.logit(getValues(mean_lh)))
+
+
+plot(mean_lh_adj - fs_risk_mean)
+
+
+```
+
+
+
+
+
+
+

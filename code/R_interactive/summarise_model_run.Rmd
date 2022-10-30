@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -25,7 +26,7 @@ library(ggplot2)
 full_pred_matrix <- readRDS(file = paste0("output/update/", run_unique_name, "_pred_matrix.Rds"))
 blank_seasia <- raster('data/clean/raster/SEAsia_extent.grd')
 
-cols <- colorRampPalette(c("#55843b", "#a4be79","#ffffbf", "#921d67", "#6c0043"))(100)
+cols <- colorRampPalette(c("#55843b","#ffffbf", "#6c0043"))(100)
 ```
 
 
@@ -78,7 +79,7 @@ title(paste0(run_unique_name, " - FS Risk"), run_unique_name)
 
 ```{r}
 # Change from arbitrary other dataset
-comp_run <- "MT_data_1"
+comp_run <- "fd_1"
 
 full_pred_matrix_comp <- readRDS(file = paste0("output/update/", comp_run, "_pred_matrix.Rds"))
 
@@ -135,7 +136,31 @@ ggplot(model_rl_long) +
 ```
 
 
+```{r fig.width=10, fig.height=4, dpi=400}
+covar_interest <- head(means$name, 5)
 
+pred_raster <- brick("data/clean/raster_updated/prediction_SEA")
+
+par(mfrow=c(1,2))
+for(i_covar in covar_interest) {
+  plot(setValues(blank_seasia, pred_means), col = cols, zlim=c(0,1))
+  title("Predicted risk means", run_unique_name)
+  
+  
+  plot(pred_raster[[i_covar]], col = viridisLite::viridis(10))
+  title(i_covar, "covariate raster")
+}
+
+par(mfrow=c(1,2))
+for(i_covar in covar_interest) {
+  plot(setValues(blank_seasia, pred_means), col = cols, zlim=c(0,1))
+  title("Predicted risk means", run_unique_name)
+  
+  
+  plot(log(pred_raster[[i_covar]]+1,10), col = viridisLite::viridis(10))
+  title(paste0(i_covar, " (log)"), "covariate raster")
+}
+```
 
 
 

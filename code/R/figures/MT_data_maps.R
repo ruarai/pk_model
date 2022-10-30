@@ -1,4 +1,5 @@
 
+try(pacman::p_unload("all"))
 library(raster)
 library(rgeos)
 library(rgdal)
@@ -6,19 +7,13 @@ library(dismo)
 library(png)
 library(sf)
 library(dplyr)
-library(tmap)
 
 library(ggrepel)
 
 MT_data <- read.csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv")
 
 source("code/R/figures/maps_common.R")
-
-admin1_shp <- shapefile('data/raw/gadm_maps/gadm36_1.shp')
-admin2_shp <- shapefile('data/raw/gadm_maps/gadm36_2.shp')
-
-admin1_sea <- admin1_shp[admin1_shp$GID_0 %in% SEA_countries,]
-admin2_sea <- admin2_shp[admin2_shp$GID_0 %in% SEA_countries,]
+source("code/R/figures/admin_common.R")
 
 # Point data
 
@@ -34,30 +29,26 @@ poly_data <- MT_data %>%
   select(Longitude, Latitude, Admin_level, Host)
 
 
-min_extent <- c(100, 120,-10,10)
+min_extent <- c(100, 120,-0,10)
 highlight_extent <- c(108,120,-1,11)
 
 library(grDevices)
 
-facet_names <- c("human" = "Human",
-                 "monkey" = "Macaque",
-                 "mosquito" = "Mosquito")
-
 
 extra_labels <- tribble(
-  ~Longitude, ~Latitude,  ~Host, ~Label,
-  5.82398, 95.305165, "human", "(n = 15)",
-  12.844231, 102.644998, "human", "(n = 5)",
-  1.605028, 111.673528, "human", "(n = 12)",
-  6.904875, 116.827899, "human", "(n = 29)",
-  7.17605, 117.06136, "mosquito", "(n = 3)",
+  ~Longitude, ~Latitude, ~Label,
+  5.82398, 95.305165, "(n = 15)",
+  12.844231, 102.644998, "(n = 5)",
+  1.605028, 111.673528, "(n = 12)",
+  6.904875, 116.827899, "(n = 32)"
 )
 
 
-plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
-  if(poly_data %>% filter(Admin_level == '1', Host == host) %>% nrow() > 0){
+
+plot_for_host <- function(extent_for_host = NULL){
+  if(poly_data %>% filter(Admin_level == '1') %>% nrow() > 0){
     poly_points_1 <- SpatialPoints(poly_data %>%
-                                     filter(Admin_level == '1', Host == host) %>% 
+                                     filter(Admin_level == '1') %>% 
                                      select(Longitude, Latitude),
                                    proj4string = CRS("+proj=longlat +datum=WGS84"))
     
@@ -69,7 +60,7 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
   }
   
   poly_points_2 <- SpatialPoints(poly_data %>%
-                                   filter(Admin_level == '2', Host == host) %>% 
+                                   filter(Admin_level == '2') %>% 
                                    select(Longitude, Latitude),
                                  proj4string = CRS("+proj=longlat +datum=WGS84"))
   gids_2 <- over(poly_points_2, admin2_sea)$GID_2
@@ -81,7 +72,6 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
     extent_for_host <- extent(shapes_2)
     extent_for_host <- raster::union(extent_for_host,
                                      extent(points_data %>%
-                                              filter(Host == host) %>%
                                               rename(x = Longitude, y = Latitude)))
     extent_for_host <- raster::union(extent_for_host,
                                      extent(min_extent))
@@ -89,10 +79,7 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
   
   
   labels_for_host <- extra_labels %>%
-    filter(Host == host &
-             extent_for_host[1] < Latitude & Latitude < extent_for_host[2] &
-             extent_for_host[3] < Longitude & Longitude < extent_for_host[4]) %>%
-    bind_rows(points_data %>% filter(Host == host) %>% mutate(Label = "")) # Append without labels to get text_repel to avoid other points
+    bind_rows(points_data %>% mutate(Label = "")) # Append without labels to get text_repel to avoid other points
   
   p <- ggplot() +
     geom_sf(data = SEA_simple,
@@ -106,82 +93,112 @@ plot_for_host <- function(host, extent_for_host = NULL, draw_region = FALSE){
               size = 0.3)
   }
   
-  if(draw_region){
-    p <- p +
-      geom_rect(aes(xmin=highlight_extent[1], xmax=highlight_extent[2],
-                    ymin=highlight_extent[3], ymax=highlight_extent[4]),
-                fill=NA,
-                colour='gray60')
-  }
-  
-  
   p <- p +
     geom_sf(data = shapes_2[,],
             aes(fill = 'b'),
             colour = "white",
             size = 0.3) +
     
-    geom_point(data = points_data %>% filter(Host == host),
+    geom_point(data = points_data,
                mapping = aes(x = Longitude, y = Latitude, color='point'),
-               shape=20, size = 1) +
+               pch = 4, size = 1) +
     
     geom_text_repel(data = labels_for_host,
                     mapping = aes(y=Longitude, x = Latitude, label = Label),
                     box.padding = 2,
-                    point.padding=0.1,
-                    nudge_x = -5) +
+                    point.padding=0.5,
+                    nudge_y = 0.5,
+                    nudge_x = -2) +
     
     coord_sf(xlim = extent_for_host[1:2],
              ylim = extent_for_host[3:4],
              expand=TRUE,
              datum = NA) +
     
-    scale_fill_manual(values = c('a' = "#7191af",'b' = '#23598b'),
-                      labels = c("Admin 1", "Admin 2"),
-                      name="Polygons") +
+    scale_fill_manual(values = c('a' = "#d79da0",'b' = '#c7777b'),
+                      labels = c("Admin 1 region", "Admin 2 region"),
+                      name=NULL) +
     
-    scale_color_manual(values = c('point' = rgb(0.8,0.2,0.1)),
-                       labels = c(''),
-                       name="Points") +
+    scale_color_manual(values = c('point' = 'black'),
+                       labels = c('Points'),
+                       name=NULL) +
     
-    theme(panel.background = element_rect(fill='white'),
+    theme(panel.background = element_rect(fill='white', colour = '#e4e4e4', size = 1.3),
           axis.title.x = element_blank(), axis.title.y = element_blank(),
-          legend.position = "none")
+          legend.position = c(0.75,0.8),
+          legend.background = element_rect(fill = 'grey98'))
   
   p
 }
 
-p1 <- plot_for_host("human", draw_region = TRUE) +
-  ggtitle("Human")
+p_map <- plot_for_host() +
+  ggtitle("B - New infection occurrence records")
 
-p2 <- plot_for_host("human", highlight_extent) +
-  ggtitle("Human - East Malaysia")
+p_map
 
-p3 <- plot_for_host("mosquito") +
-  ggtitle("Mosquito")
-
-p4 <- plot_for_host("monkey") +
-  ggtitle("Macaque")
-
-
-library(cowplot)
-
-p_full <- plot_grid(p1, p2, p3, p4,
-                    nrow = 2, ncol=2,
-                    align='h')
+mt_data <- read_csv("data/raw/occurrence/Pk_merged_uncoded_SEA.csv") %>%
+  distinct(ID, .keep_all = TRUE)
 
 
 
-plot_legend <- get_legend(
-  p1 + 
-    guides(color = guide_legend(nrow = 1)) +
-    theme(legend.position = "bottom")
+fs_data_mbs <- read_csv("data/raw/occurrence/polygon_data_mbs.csv") %>%
+  distinct(ID, .keep_all = TRUE) %>%
+  filter(Presence == 1)
+
+
+fs_data_non_mbs <- read_csv("data/raw/occurrence/presence_absence_ex-MSB_confirmed.csv") %>%
+  distinct(ID, .keep_all = TRUE) %>%
+  filter(Presence == 1)
+
+
+all_data_by_year <- bind_rows(
+  mt_data %>% select(Year) %>% mutate(Source = "MT"),
+  fs_data_mbs %>% select(Year) %>% mutate(Source = "FS"),
+  fs_data_non_mbs %>% select(Year) %>% mutate(Source = "FS")
+) %>%
+  count(Source, Year) 
+
+
+
+all_data_by_year$Source <- factor(all_data_by_year$Source, c("MT","FS"))
+
+p_epi <- ggplot(all_data_by_year) +
+  geom_col(aes(x=Year, y = n, fill = Source), position='stack') +
+  scale_fill_manual(values = c("MT" = "#c7777b", "FS" = "#5d798c"),
+                    labels = c("FS" = "Prior database (Shearer et al.)",
+                               "MT" =  "Current study"),
+                    guide = guide_legend(reverse = TRUE),
+                    name = NULL) +
+  xlab("Year") + ylab("Count") +
+  scale_x_continuous(breaks = seq(0,10000,by=2),
+                     minor_breaks = 1:10000) +
+  theme(legend.position = c(0.25, 0.7),
+        legend.background = element_rect(fill = 'grey98'),
+        panel.background = element_blank(),
+        panel.grid.major = element_line(colour = 'gray95'),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks.x = element_line(color = 'gray80')) +
+  expand_limits(x = 2020) +
+  
+  ggtitle("C - Infection occurrence records by year")
+
+
+cowplot::plot_grid(
+  p_map, p_epi,
+  ncol = 1, rel_heights = c(2.5, 1)
 )
 
-plot_grid(p_full, plot_legend, ncol = 1, rel_heights = c(1, .2))
 
-ggsave("output/figures/MT_data_maps.pdf",
-       width = 6, height=6)
+ggsave("output/figures/newdata.pdf",
+       width = 9 * 0.65, height = 11 * 0.65,
+       bg = "white")
+
+
+
+
+
+
 
 
 
