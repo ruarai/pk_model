@@ -4,3 +4,8 @@
 /.Rproj.user*
 /.Rhistory
 .Rproj.user
+
+
+slurm_out/*
+.RData
+Python_interactive/*
