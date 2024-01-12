@@ -3,32 +3,6 @@
 
 This repository contains the code necessary to fit, predict and evaluate the *Plasmodium knowlesi* risk model as published in: https://www.medrxiv.org/content/10.1101/2023.08.04.23293633v1
 
-### Data Requirements
-
- - Parasite infection/species occurrence data (not necessarily *Plasmodium knowlesi*) with longitude/latitude
- - Some number of environmental covariate rasters
-
-### Data Processing
-
-A number of data preprocessing steps must be performed before the model can be fit. This consists of:
-
-- Collating *Pk* occurrence data into a common database and filtering under some requirements (see `code/R/preprocessing`)
-
-- Producing a number of raster covariates from disparate sources under a common grid projection (see `code/R/covariate_formation`)
-
-### Model fitting and prediction
-
-The process of fitting the boosted regression tree model has been broken down into three stages to allow for the running of the model on a cluster system (SPARTAN). These are:
-
-- Splitting the data into *m* sets of *n* bootstraps each (`split_bootstraps.R`, `split_bootstraps.slurm`)
-- Fitting the model *mn* times (`run_model.R`, `model_run.slurm`)
-- Producing predictions for the model *mn* times (`produce_predictions.R`, `produce_predictions.slurm`)
-
-### Analysis
-
-The directory `code/R/figures` contains a number of R scripts to produce plots, tables and maps.
-
-
 
 ## Packages
 
