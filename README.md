@@ -1,11 +1,7 @@
 
 ## Updated risk distribution model for *Plasmodium knowlesi* infection across Southeast Asia
 
-This repository contains the code necessary to fit, predict and evaluate the *Plasmodium knowlesi* risk model as published in:
-
-[link]()
-
-The codebase is built upon work by Freya Shearer as published in [Estimating Geographical Variation in the Risk of Zoonotic Plasmodium knowlesi Infection in Countries Eliminating Malaria](https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0004915), and relies heavily upon the packages `seegSDM`, `dismo` and `gbm`.
+This repository contains the code necessary to fit, predict and evaluate the *Plasmodium knowlesi* risk model as published in: https://www.medrxiv.org/content/10.1101/2023.08.04.23293633v1
 
 ### Data Requirements
 
